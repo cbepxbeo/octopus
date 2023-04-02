@@ -11,6 +11,9 @@
 
 import Foundation
 
+//MARK: Array.Parallel
 extension Array {
-    final public class Parallel<Element> {}
+    public final class Parallel<Element> {
+        internal init(array: [Element]){}
+    }
 }
