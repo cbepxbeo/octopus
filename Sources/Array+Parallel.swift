@@ -15,5 +15,10 @@ import Foundation
 extension Array {
     public final class Parallel<Element> {
         internal init(array: [Element]){}
+        
+        private var amountThreads: Int
+        private let insertQueue: MyDi
+        private let array: [Element]
+        private let sliceData: (step: Int, remainder: Int)
     }
 }
