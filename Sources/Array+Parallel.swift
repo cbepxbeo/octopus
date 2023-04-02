@@ -31,4 +31,20 @@ extension Array.Parallel {
         }
         return self.amountThreads
     }
+    
+    private func parallelize(
+        amountThreads: Int,
+        group: DispatchGroup,
+        _ action: @escaping (_ iteration: Int, _ slice: ClosedRange<Int>) -> ()){
+        for currentIteration in 1...amountThreads {
+            let startIndex = self.sliceData.step * (currentIteration - 1)
+            let endIndex = currentIteration == amountThreads ?
+            ((self.sliceData.step * currentIteration) + self.sliceData.remainder - 1) :
+            ((self.sliceData.step * currentIteration) - 1)
+            group.enter()
+            DispatchQueue.global(qos: .userInteractive).async {
+                action(currentIteration, startIndex...endIndex)
+            }
+        }
+    }
 }
