@@ -14,6 +14,15 @@ import Foundation
 //MARK: Array.Parallel
 extension Array {
     public final class Parallel<Element> {
-        internal init(array: [Element]){}
+        internal init(array: [Element]){
+            let count = array.count
+            let threads = ProcessInfo.processInfo.activeProcessorCount
+            let queueLabel = "Array.Parallel: count - \(count)"
+            let queueLabelData = "element: \(Element.self), \(CFAbsoluteTimeGetCurrent())"
+            self.array = array
+            self.insertQueue = .init(label: "\(queueLabel), \(queueLabelData)")
+            self.amountThreads = threads
+            self.sliceData = (count / threads, count % threads)
+        }
     }
 }
