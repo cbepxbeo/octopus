@@ -18,6 +18,7 @@
 		7463BF4829DAF64700B28C66 /* PerfomanceFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7463BF4729DAF64700B28C66 /* PerfomanceFilterView.swift */; };
 		7463BF4C29DB1AA900B28C66 /* PerfomanceMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7463BF4B29DB1AA900B28C66 /* PerfomanceMapView.swift */; };
 		7463BF4E29DB1AE300B28C66 /* TaskToMapProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7463BF4D29DB1AE300B28C66 /* TaskToMapProvider.swift */; };
+		7463BF5029DB1C9000B28C66 /* PerfomanceWrrapperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7463BF4F29DB1C9000B28C66 /* PerfomanceWrrapperView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 		7463BF4729DAF64700B28C66 /* PerfomanceFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfomanceFilterView.swift; sourceTree = "<group>"; };
 		7463BF4B29DB1AA900B28C66 /* PerfomanceMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfomanceMapView.swift; sourceTree = "<group>"; };
 		7463BF4D29DB1AE300B28C66 /* TaskToMapProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskToMapProvider.swift; sourceTree = "<group>"; };
+		7463BF4F29DB1C9000B28C66 /* PerfomanceWrrapperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfomanceWrrapperView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 				7463BF4329DAF4AE00B28C66 /* ErrorFilterView.swift */,
 				7463BF4729DAF64700B28C66 /* PerfomanceFilterView.swift */,
 				7463BF4B29DB1AA900B28C66 /* PerfomanceMapView.swift */,
+				7463BF4F29DB1C9000B28C66 /* PerfomanceWrrapperView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -192,6 +195,7 @@
 				7463BF4429DAF4AE00B28C66 /* ErrorFilterView.swift in Sources */,
 				7463BF3E29DAF36F00B28C66 /* Fake.swift in Sources */,
 				7463BF3C29DAF21D00B28C66 /* ExampleTimer.swift in Sources */,
+				7463BF5029DB1C9000B28C66 /* PerfomanceWrrapperView.swift in Sources */,
 				7463BF4E29DB1AE300B28C66 /* TaskToMapProvider.swift in Sources */,
 				7463BF4229DAF42300B28C66 /* TaskToFilterProvider.swift in Sources */,
 				7463BF4829DAF64700B28C66 /* PerfomanceFilterView.swift in Sources */,

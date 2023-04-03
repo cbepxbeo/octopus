@@ -9,7 +9,7 @@
 protocol TaskToMapProvider {}
 
 extension TaskToMapProvider {
-    func fakeTask(_ value: Fake) -> String {
+    func fakeTaskToMap(_ value: Fake) -> String {
         var temp = 0
         for item in 0...500 {
             temp += item
