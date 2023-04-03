@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "octopus",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cbepxbeo/octopus.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "08536b3cb6ab333f1f10b1d31cabeb84829a1fb8"
+      }
+    }
+  ],
+  "version" : 2
+}
