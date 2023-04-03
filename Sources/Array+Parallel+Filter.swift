@@ -38,11 +38,9 @@ extension Array.Parallel {
             let group = DispatchGroup()
             var errors: [(String, Error)] = []
             
-            self.parallelize(amountThreads: self.amountThreads(threads), group: group) { [weak self] iteration, slice in
+            self.parallelize(amountThreads: self.amountThreads(threads), group: group, priority: priority) { [weak self] iteration, slice in
                 guard let parallel = self else {
-                    let message = "The instance was freed at run time. "
-                    let ps = "P/S I don’t know how you did it, but if it happened, please share in the GitHub thread :-)"
-                    errors.append((message + ps, OctopusError.unexpectedState))
+                    errors.append((Self.instanceWasFreedMessage, OctopusError.unexpectedState))
                     group.leave()
                     return
                 }
@@ -54,7 +52,7 @@ extension Array.Parallel {
                     }
                 } catch {
                     parallel.insertQueue.async {
-                        errors.append(("element: \(Element.self), slice: \(slice)", error))
+                        errors.append(("method: filter, element: \(Element.self), slice: \(slice)", error))
                         group.leave()
                     }
                 }

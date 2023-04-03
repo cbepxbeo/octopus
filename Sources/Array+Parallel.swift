@@ -44,6 +44,7 @@ extension Array.Parallel {
     internal func parallelize(
         amountThreads: Int,
         group: DispatchGroup,
+        priority: DispatchQoS.QoSClass,
         _ action: @escaping (_ iteration: Int, _ slice: ClosedRange<Int>) -> ()){
         for currentIteration in 1...amountThreads {
             let startIndex = self.sliceData.step * (currentIteration - 1)
@@ -51,7 +52,7 @@ extension Array.Parallel {
             ((self.sliceData.step * currentIteration) + self.sliceData.remainder - 1) :
             ((self.sliceData.step * currentIteration) - 1)
             group.enter()
-            DispatchQueue.global(qos: .userInteractive).async {
+            DispatchQueue.global(qos: priority).async {
                 action(currentIteration, startIndex...endIndex)
             }
         }
