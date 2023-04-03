@@ -11,7 +11,6 @@
 
 import Foundation
 
-//MARK: Array.Parallel
 extension Array {
     public final class Parallel<Element> {
 
@@ -26,89 +25,23 @@ extension Array {
             self.sliceData = (count / threads, count % threads)
         }
 
-        private var amountThreads: Int
-        private let insertQueue: DispatchQueue
-        private let array: [Element]
-        private let sliceData: (step: Int, remainder: Int)
-    }
-}
-
-//MARK: --Public Methods
-extension Array.Parallel {
-    //MARK: Filter
-    public func filter(
-        requiredNumber ofThreads: Int? = nil,
-        priority: DispatchQoS.QoSClass = .userInteractive,
-        isIncluded: @escaping (Element) throws -> Bool
-    ) rethrows -> [Element]{
-        
-        return try _filter(requiredNumber: ofThreads, priority: priority, isIncluded: isIncluded, rethrow)
-        
-        func rethrow(error: Error) throws ->() {
-            throw error
-        }
-        
-        func _filter(
-            requiredNumber threads: Int?,
-            priority: DispatchQoS.QoSClass,
-            isIncluded: @escaping (Element) throws -> Bool,
-            _ rethrow: (_ error: Error) throws -> ()
-        ) rethrows -> [Element]
-        {
-            if self.array.isEmpty {
-                return []
-            }
-            var storage: [Int: [Element]] = [:]
-            let group = DispatchGroup()
-            var errors: [(String, Error)] = []
-            
-            self.parallelize(amountThreads: self.amountThreads(threads), group: group) { [weak self] iteration, slice in
-                guard let parallel = self else {
-                    let message = "The instance was freed at run time. "
-                    let ps = "P/S I don’t know how you did it, but if it happened, please share in the GitHub thread :-)"
-                    errors.append((message + ps, OctopusError.unexpectedState))
-                    group.leave()
-                    return
-                }
-                do {
-                    let output = try parallel.array[slice].filter(isIncluded)
-                    parallel.insertQueue.async {
-                        storage[iteration] = output
-                        group.leave()
-                    }
-                } catch {
-                    parallel.insertQueue.async {
-                        errors.append(("element: \(Element.self), slice: \(slice)", error))
-                        group.leave()
-                    }
-                }
-            }
-            group.wait()
-            
-            if !errors.isEmpty {
-                if errors.count > 1 {
-                    try rethrow(OctopusError.multiple(errors: errors))
-                } else if let first = errors.first {
-                    try rethrow(OctopusError.alone(message: first.0, error: first.1))
-                }
-            }
-            
-            return storage.sorted(by: { $0.0 < $1.0 }).flatMap { $0.1 }
-        }
-        
+        internal var amountThreads: Int
+        internal let insertQueue: DispatchQueue
+        internal let array: [Element]
+        internal let sliceData: (step: Int, remainder: Int)
     }
 }
 
 //MARK: Private Methods
 extension Array.Parallel {
-    private func amountThreads(_ amount: Int?) -> Int {
+    internal func amountThreads(_ amount: Int?) -> Int {
         if let amount {
             return amount > 6 ? 6 : amount < 2 ? 2 : amount
         }
         return self.amountThreads
     }
     
-    private func parallelize(
+    internal func parallelize(
         amountThreads: Int,
         group: DispatchGroup,
         _ action: @escaping (_ iteration: Int, _ slice: ClosedRange<Int>) -> ()){
