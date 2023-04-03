@@ -14,16 +14,30 @@ import Octopus
 struct PerfomanceFilterView: View, ArrayWithFakeElementProvider, TaskToFilterProvider {
     @State var text: String = "-"
     @State var array: [Fake] = []
+    @State var priority: DispatchQoS.QoSClass = .utility
     
     var body: some View {
         ZStack{
             Color.gray.opacity(text == "" ? 0.3 : 0.7)
             VStack(spacing: 30){
                 Text(self.text)
-                Button("filter - default (main)"){
+                Picker("Priority", selection: $priority) {
+                    Text("utility")
+                        .tag(DispatchQoS.QoSClass.utility)
+                    Text("userInteractive")
+                        .tag(DispatchQoS.QoSClass.userInteractive)
+                    Text("userInitiated")
+                        .tag(DispatchQoS.QoSClass.userInitiated)
+                    Text("unspecified")
+                        .tag(DispatchQoS.QoSClass.unspecified)
+                    Text("background")
+                        .tag(DispatchQoS.QoSClass.background)
+
+                }
+                Button("filter - default (sync)"){
                     self.filterSync(parallel: false)
                 }
-                Button("filter - parallel (main)"){
+                Button("filter - parallel (sync)"){
                     self.filterSync(parallel: true)
                 }
                 Button("filter - default (async)"){
@@ -43,14 +57,15 @@ struct PerfomanceFilterView: View, ArrayWithFakeElementProvider, TaskToFilterPro
         if parallel {
             self.text = ""
             let time = ExampleTimer.start()
-            let result = self.array.parallel().filter(self.fakeTask)
+            let _ = self.array.parallel()
+                .filter(priority: self.priority, self.fakeTask)
             let endTime = time.stop()
             print(endTime)
             self.text = "\(endTime.description)"
         } else {
             self.text = ""
             let time = ExampleTimer.start()
-            let result = self.array.filter(fakeTask)
+            let _ = self.array.filter(fakeTask)
             let endTime = time.stop()
             print(endTime)
             self.text = "\(endTime.description)"
@@ -62,7 +77,8 @@ struct PerfomanceFilterView: View, ArrayWithFakeElementProvider, TaskToFilterPro
             self.text = ""
             DispatchQueue.global().async {
                 let time = ExampleTimer.start()
-                let result = self.array.parallel().filter(fakeTask)
+                let _ = self.array.parallel()
+                    .filter(priority: self.priority, self.fakeTask)
                 let endTime = time.stop()
                 print(endTime)
                 DispatchQueue.main.async {
@@ -73,7 +89,7 @@ struct PerfomanceFilterView: View, ArrayWithFakeElementProvider, TaskToFilterPro
             self.text = ""
             DispatchQueue.global().async {
                 let time = ExampleTimer.start()
-                let result = self.array.filter(fakeTask)
+                let _ = self.array.filter(fakeTask)
                 let endTime = time.stop()
                 print(endTime)
                 DispatchQueue.main.async {
