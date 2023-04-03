@@ -9,10 +9,14 @@
  
 */
 
+import Foundation
+
 extension Array.Parallel {
     internal func amountThreads(_ amount: Int?) -> Int {
         if let amount {
-            return amount > 6 ? 6 : amount < 2 ? 2 : amount
+            let max = ProcessInfo.processInfo.activeProcessorCount
+            let min = 2
+            return amount > max ? max : amount < min ? min : amount
         }
         return self.amountThreads
     }
