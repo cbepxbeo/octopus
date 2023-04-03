@@ -1,6 +1,6 @@
 /*
  
- File: ErrorFilterView.swift
+ File: ErrorMapView.swift
  Created by: Egor Boyko
  Date: 03.04.2023
  
@@ -9,12 +9,12 @@
 import SwiftUI
 import Octopus
 
-struct ErrorFilterView: View, ArrayWithFakeElementProvider {
+struct ErrorMapView: View, ArrayWithFakeElementProvider {
     @State var array: [Fake] = []
     
     var body: some View {
         ErrorWrapperView(
-            label: "Filter",
+            label: "Map",
             isShowedContent: !self.array.isEmpty,
             multipleTask: multipleTask,
             aloneTask: aloneTask
@@ -43,4 +43,5 @@ struct ErrorFilterView: View, ArrayWithFakeElementProvider {
             }
         }
     }
+    
 }

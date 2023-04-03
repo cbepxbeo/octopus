@@ -9,7 +9,7 @@
 protocol TaskToFilterProvider {}
 
 extension TaskToFilterProvider {
-    func fakeTask(_ value: Fake) -> Bool {
+    func fakeTaskToFilter(_ value: Fake) -> Bool {
         var temp = 0
         for item in 0...500 {
             temp += item

@@ -1,6 +1,6 @@
 /*
  
- File: PerfomanceFilterView.swift
+ File: PerfomanceMapView.swift
  Created by: Egor Boyko
  Date: 03.04.2023
  
@@ -11,14 +11,14 @@ import Foundation
 import SwiftUI
 import Octopus
 
-struct PerfomanceFilterView: View, ArrayWithFakeElementProvider, TaskToFilterProvider {
+struct PerfomanceMapView: View, ArrayWithFakeElementProvider, TaskToMapProvider {
     @State var array: [Fake] = []
     @State var priority: DispatchQoS.QoSClass = .userInteractive
     
     var body: some View {
         PerfomanceWrrapperView(
             priority: $priority,
-            label: "Filter",
+            label: "Map",
             isShowedContent: !self.array.isEmpty,
             parallelTask: parallelTask,
             defaultTask: defaultTask
@@ -35,10 +35,11 @@ struct PerfomanceFilterView: View, ArrayWithFakeElementProvider, TaskToFilterPro
     
     func parallelTask(){
         let _ = self.array.parallel()
-            .filter(priority: self.priority, self.fakeTaskToFilter)
+            .map(priority: self.priority, self.fakeTaskToMap)
     }
     
     func defaultTask(){
-        let _ = self.array.filter(fakeTaskToFilter)
+        let _ = self.array.map(self.fakeTaskToMap)
     }
+    
 }
