@@ -20,6 +20,6 @@ let package = Package(
             name: "OctopusTests",
             dependencies: ["Octopus"]
          ),
-    ]
+    ],
     swiftLanguageVersions: [ .version("5.1") ]
 )

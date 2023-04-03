@@ -1,6 +1,6 @@
 /*
  
- Project: ParallelSequence
+ Project: Octopus
  File: OctopusError.swift
  Created by: Egor Boyko
  Date: 02.04.2023

@@ -1,6 +1,6 @@
 /*
  
- Project: ParallelSequence
+ Project: Octopus
  File: Array+Parallel.swift
  Created by: Egor Boyko
  Date: 02.04.2023
@@ -27,14 +27,15 @@ extension Array {
         }
 
         private var amountThreads: Int
-        private let insertQueue: MyDi
+        private let insertQueue: DispatchQueue
         private let array: [Element]
         private let sliceData: (step: Int, remainder: Int)
     }
 }
 
-//MARK: Public Methods
+//MARK: --Public Methods
 extension Array.Parallel {
+    //MARK: Filter
     public func filter(
         requiredNumber ofThreads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,
@@ -43,7 +44,7 @@ extension Array.Parallel {
         
         return try _filter(requiredNumber: ofThreads, priority: priority, isIncluded: isIncluded, rethrow)
         
-        func rethrow(error: Swift.Error) throws ->() {
+        func rethrow(error: Error) throws ->() {
             throw error
         }
         
@@ -51,7 +52,7 @@ extension Array.Parallel {
             requiredNumber threads: Int?,
             priority: DispatchQoS.QoSClass,
             isIncluded: @escaping (Element) throws -> Bool,
-            _ rethrow: (_ error: Swift.Error) throws -> ()
+            _ rethrow: (_ error: Error) throws -> ()
         ) rethrows -> [Element]
         {
             if self.array.isEmpty {
@@ -59,13 +60,13 @@ extension Array.Parallel {
             }
             var storage: [Int: [Element]] = [:]
             let group = DispatchGroup()
-            var errors: [(String, Swift.Error)] = []
+            var errors: [(String, Error)] = []
             
             self.parallelize(amountThreads: self.amountThreads(threads), group: group) { [weak self] iteration, slice in
                 guard let parallel = self else {
                     let message = "The instance was freed at run time. "
                     let ps = "P/S I don’t know how you did it, but if it happened, please share in the GitHub thread :-)"
-                    errors.append((message + ps, Array.Parallel<Element>.Error.unexpectedState))
+                    errors.append((message + ps, OctopusError.unexpectedState))
                     group.leave()
                     return
                 }
@@ -86,14 +87,16 @@ extension Array.Parallel {
             
             if !errors.isEmpty {
                 if errors.count > 1 {
-                    try rethrow(Array.Parallel<Element>.Error.multiple2(errors: errors))
+                    try rethrow(OctopusError.multiple(errors: errors))
                 } else if let first = errors.first {
-                    try rethrow(Array.Parallel<Element>.Error.alone2(message: first.0, error: first.1))
+                    try rethrow(OctopusError.alone(message: first.0, error: first.1))
                 }
             }
             
             return storage.sorted(by: { $0.0 < $1.0 }).flatMap { $0.1 }
         }
+        
+    }
 }
 
 //MARK: Private Methods

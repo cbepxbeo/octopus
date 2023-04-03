@@ -3,6 +3,6 @@ import XCTest
 
 final class OctopusTests: XCTestCase {
     func testExample() throws {
-        //...
+        //
     }
 }
