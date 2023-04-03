@@ -1,7 +1,7 @@
 /*
  
  Project: Octopus
- File: Array+Parallel+Filter.swift
+ File: Array+Parallel+Method+Filter..swift
  Created by: Egor Boyko
  Date: 03.04.2023
  
