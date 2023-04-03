@@ -1,7 +1,7 @@
 import XCTest
-@testable import ParallelSequence
+@testable import Octopus
 
-final class ParallelSequenceTests: XCTestCase {
+final class OctopusTests: XCTestCase {
     func testExample() throws {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct

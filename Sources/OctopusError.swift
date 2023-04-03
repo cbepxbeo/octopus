@@ -1,7 +1,7 @@
 /*
  
  Project: ParallelSequence
- File: ParallelSequenceError.swift
+ File: OctopusError.swift
  Created by: Egor Boyko
  Date: 02.04.2023
  
@@ -10,7 +10,7 @@
 */
 
 ///Errors when performing parallel operations
-public enum ParallelSequenceError: Error {
+public enum OctopusError: Error {
     ///Returns multiple errors (rethrows).
     case multiple(errors: [(String, Error)])
     ///Returns alone error (rethrows).
