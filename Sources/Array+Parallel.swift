@@ -14,6 +14,7 @@ import Foundation
 //MARK: Array.Parallel
 extension Array {
     public final class Parallel<Element> {
+
         internal init(array: [Element]){
             let count = array.count
             let threads = ProcessInfo.processInfo.activeProcessorCount
@@ -24,5 +25,10 @@ extension Array {
             self.amountThreads = threads
             self.sliceData = (count / threads, count % threads)
         }
+
+        private var amountThreads: Int
+        private let insertQueue: MyDi
+        private let array: [Element]
+        private let sliceData: (step: Int, remainder: Int)
     }
 }
