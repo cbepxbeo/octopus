@@ -17,6 +17,9 @@ struct _App: App {
                     NavigationLink("ErrorFilterView") {
                         ErrorFilterView()
                     }
+                    NavigationLink("ErrorMapView") {
+                        ErrorMapView()
+                    }
                     NavigationLink("PerfomanceFilterView") {
                         PerfomanceFilterView()
                     }
