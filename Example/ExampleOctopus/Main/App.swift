@@ -20,6 +20,9 @@ struct _App: App {
                     NavigationLink("PerfomanceFilterView") {
                         PerfomanceFilterView()
                     }
+                    NavigationLink("PerfomanceMapView") {
+                        PerfomanceMapView()
+                    }
                 }
             }
         }

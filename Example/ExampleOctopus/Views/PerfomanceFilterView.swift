@@ -14,7 +14,7 @@ import Octopus
 struct PerfomanceFilterView: View, ArrayWithFakeElementProvider, TaskToFilterProvider {
     @State var text: String = "-"
     @State var array: [Fake] = []
-    @State var priority: DispatchQoS.QoSClass = .utility
+    @State var priority: DispatchQoS.QoSClass = .userInteractive
     
     var body: some View {
         ZStack{
