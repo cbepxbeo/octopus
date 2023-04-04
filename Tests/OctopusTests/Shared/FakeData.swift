@@ -5,7 +5,6 @@
  Created by: Egor Boyko
  Date: 03.04.2023
  
- 
 */
 
 struct FakeData {

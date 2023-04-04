@@ -15,15 +15,15 @@ protocol TestArrayProvider{}
 
 extension TestArrayProvider {
     
-    func getArray(random: Bool = true) -> [FakeData] {
+    func getArray(random: Bool = true, iterations: Int = 100) -> [FakeData] {
         var temp: [FakeData] = []
-        for i in 0...(random ? Int.random(in: 1...1000) : 10){
+        for i in 0...(random ? Int.random(in: 1...1000) : iterations){
             temp.append(.init(int: i, string: "error", bool: false))
-            for z in 0...(random ? Int.random(in: 1...1000) : 10){
+            for z in 0...(random ? Int.random(in: 1...1000) : iterations){
                 temp.append(
                     .init(
                         int: z,
-                        string: "\(Int.random(in: 1...1000))",
+                        string: "\((random ? Int.random(in: 1...1000) : z))",
                         bool: Bool.random()
                     )
                 )
@@ -31,4 +31,9 @@ extension TestArrayProvider {
         }
         return temp
     }
+    
+    func filterDefaultTask(_ value: FakeData) -> Bool{
+        value.bool && value.int == 99999
+    }
+    
 }
