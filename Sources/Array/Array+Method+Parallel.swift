@@ -1,7 +1,7 @@
 /*
  
  Project: Octopus
- File: Array+GettingParallelInstance.swift
+ File: Array+Method+Parallel.swift
  Created by: Egor Boyko
  Date: 02.04.2023
  
