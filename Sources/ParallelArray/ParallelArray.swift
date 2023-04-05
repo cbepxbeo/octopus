@@ -12,9 +12,10 @@
 import Foundation
 
 extension Array {
-    public final class Parallel<Element> {
+    ///Bla bla
+    public final class Parallel<C: Collection> {
 
-        internal init(array: [Element]){
+        internal init(array: C){
             let count = array.count
             let threads = ProcessInfo.processInfo.activeProcessorCount
             let queueLabel = "Array.Parallel: count - \(count)"
@@ -27,7 +28,7 @@ extension Array {
 
         internal var amountThreads: Int
         internal let insertQueue: DispatchQueue
-        internal let array: [Element]
+        internal let array: C
         internal let sliceData: (step: Int, remainder: Int)
     }
 }
