@@ -25,7 +25,7 @@ extension XCTestCase{
     
     public func customMeasure(ms: Int, closure: ()->()){
         for _ in 0..<10 {
-            XCTAssertTrue(90 > self.timeBlock { closure() })
+            XCTAssertTrue(ms > self.timeBlock { closure() })
         }
     }
 }

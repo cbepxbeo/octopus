@@ -1,7 +1,7 @@
 /*
  
  Project: Octopus
- File: Array+Parallel+Method+AmountThreads+Tests.swift
+ File: TestProvider.swift
  Created by: Egor Boyko
  Date: 03.04.2023
  
@@ -11,9 +11,9 @@
 import Foundation
 
 
-protocol TestArrayProvider{}
+protocol TestProvider{}
 
-extension TestArrayProvider {
+extension TestProvider {
     
     func getArray(random: Bool = true, iterations: Int = 100) -> [FakeData] {
         var temp: [FakeData] = []
@@ -34,6 +34,10 @@ extension TestArrayProvider {
     
     func filterDefaultTask(_ value: FakeData) -> Bool{
         value.bool && value.int == 99999
+    }
+    
+    func mapDefaultTask(_ value: FakeData) -> String{
+        value.string + "\(value.int)"
     }
     
 }

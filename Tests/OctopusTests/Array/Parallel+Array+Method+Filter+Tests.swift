@@ -1,7 +1,7 @@
 /*
  
  Project: Octopus
- File: Array+Parallel+Method+Filter+Tests.swift
+ File: Parallel+Array+Method+Filter+Tests.swift
  Created by: Egor Boyko
  Date: 03.04.2023
  
@@ -11,7 +11,7 @@
 import XCTest
 @testable import Octopus
 
-final class ArrayParallelMethodFilterTests: XCTestCase, TestArrayProvider {
+final class ParallelArrayMethodFilterTests: XCTestCase, TestProvider {
     var randomArray: Array<FakeData>!
     var staticArray: Array<FakeData>!
     

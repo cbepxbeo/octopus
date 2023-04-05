@@ -1,7 +1,7 @@
 /*
  
  Project: Octopus
- File: Array+Parallel+Method+AmountThreads+Tests.swift
+ File: Parallel+Method+AmountThreads+Tests.swift
  Created by: Egor Boyko
  Date: 03.04.2023
  
@@ -11,7 +11,7 @@
 import XCTest
 @testable import Octopus
 
-final class ArrayParallelMethodAmountThreadsTests: XCTestCase, TestArrayProvider {
+final class ParallelMethodAmountThreadsTests: XCTestCase, TestProvider {
     var parallel: Parallel<Array<FakeData>, FakeData>!
     
     override func setUpWithError() throws {
