@@ -15,10 +15,11 @@ public final class Parallel<StructureData: Collection, Element> where StructureD
     internal init(structureData: StructureData){
         let count = structureData.count
         let threads = ProcessInfo.processInfo.activeProcessorCount
-        let queueLabel = "Array.Parallel: count - \(count)"
-        let queueLabelData = "element: \(Element.self), \(CFAbsoluteTimeGetCurrent())"
+        let queueLabel = "Parallel: count - \(count)"
+        let queueLabelData = "structure data: \(StructureData.self), element: \(Element.self)"
+        let queueLabelRandom = "\(CFAbsoluteTimeGetCurrent())"
         self.structureData = structureData
-        self.insertQueue = .init(label: "\(queueLabel), \(queueLabelData)")
+        self.insertQueue = .init(label: "\(queueLabel), \(queueLabelData), \(queueLabelRandom)")
         self.amountThreads = threads
         self.sliceData = (count / threads, count % threads)
     }
