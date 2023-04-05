@@ -11,6 +11,7 @@
 
 import Foundation
 
+///Use Collection and related methods (parallel) to create Parallel instances.
 public final class Parallel<StructureData: Collection, Element> where StructureData.Element == Element {
     internal init(structureData: StructureData){
         let count = structureData.count
