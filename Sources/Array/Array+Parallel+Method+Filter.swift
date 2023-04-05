@@ -1,24 +1,25 @@
 /*
  
  Project: Octopus
- File: Array+Parallel+Filter.swift
+ File: Array+Parallel+Method+Filter..swift
  Created by: Egor Boyko
  Date: 03.04.2023
  
  Status: #Completed | #Not decorated
  
-*/
+ */
 
 import Foundation
 
+//MARK: Default
 extension Array.Parallel {
     public func filter(
-        requiredNumber ofThreads: Int? = nil,
+        requiredNumber threads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,
         _ isIncluded: @escaping (Element) throws -> Bool
     ) rethrows -> [Element]{
         
-        return try _filter(requiredNumber: ofThreads, priority: priority, isIncluded: isIncluded, rethrow)
+        return try _filter(requiredNumber: threads, priority: priority, isIncluded: isIncluded, rethrow)
         
         func rethrow(error: Error) throws ->() {
             throw error
@@ -29,8 +30,7 @@ extension Array.Parallel {
             priority: DispatchQoS.QoSClass,
             isIncluded: @escaping (Element) throws -> Bool,
             _ rethrow: (_ error: Error) throws -> ()
-        ) rethrows -> [Element]
-        {
+        ) rethrows -> [Element]{
             if self.array.isEmpty {
                 return []
             }
@@ -52,7 +52,8 @@ extension Array.Parallel {
                     }
                 } catch {
                     parallel.insertQueue.async {
-                        errors.append(("method: filter, element: \(Element.self), slice: \(slice)", error))
+                        let message = "method: filter, element: \(Element.self), slice: \(slice)"
+                        errors.append((message, error))
                         group.leave()
                     }
                 }
@@ -68,6 +69,38 @@ extension Array.Parallel {
             }
             
             return storage.sorted(by: { $0.0 < $1.0 }).flatMap { $0.1 }
+        }
+    }
+}
+
+//MARK: async with throws
+extension Array.Parallel {
+    public func filter(
+        requiredNumber threads: Int? = nil,
+        priority: DispatchQoS.QoSClass = .userInteractive,
+        _ isIncluded: @escaping (Element) throws -> Bool
+    ) async throws -> [Element]{
+        try await withCheckedThrowingContinuation{ continuation in
+            do {
+                let result = try self.filter(requiredNumber: threads, priority: priority, isIncluded)
+                continuation.resume(returning: result)
+            } catch {
+                continuation.resume(throwing: error)
+            }
+        }
+    }
+}
+
+//MARK: async
+extension Array.Parallel {
+    public func filter(
+        requiredNumber threads: Int? = nil,
+        priority: DispatchQoS.QoSClass = .userInteractive,
+        _ isIncluded: @escaping (Element) -> Bool
+    ) async -> [Element]{
+        await withCheckedContinuation{ continuation in
+            let result = self.filter(requiredNumber: threads, priority: priority, isIncluded)
+            continuation.resume(returning: result)
         }
     }
 }
