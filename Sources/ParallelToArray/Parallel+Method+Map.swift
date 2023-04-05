@@ -1,7 +1,7 @@
 /*
  
  Project: Octopus
- File: Array+Parallel+Method+Map.swift
+ File: Parallel+Method+Map.swift
  Created by: Egor Boyko
  Date: 03.04.2023
  
@@ -11,7 +11,7 @@
 
 import Foundation
 
-extension Array.Parallel where C == Array {
+extension Parallel where StructureData == Array<Element> {
     public func map<T>(
         requiredNumber threads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,
@@ -30,7 +30,7 @@ extension Array.Parallel where C == Array {
             transform: @escaping (Element) throws -> T,
             _ rethrow: (_ error: Swift.Error) throws -> ()
         ) rethrows -> [T] {
-            if self.array.isEmpty {
+            if self.structureData.isEmpty {
                 return []
             }
             var storage: [Int: [T]] = [:]
@@ -44,7 +44,7 @@ extension Array.Parallel where C == Array {
                     return
                 }
                 do {
-                    let output = try parallel.array[slice].map(transform)
+                    let output = try parallel.structureData[slice].map(transform)
                     parallel.insertQueue.async {
                         storage[iteration] = output
                         group.leave()
@@ -74,7 +74,7 @@ extension Array.Parallel where C == Array {
 }
 
 //MARK: async with throws
-extension Array.Parallel where C == Array {
+extension Parallel where StructureData == Array<Element> {
     public func map<T>(
         requiredNumber threads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,
@@ -92,7 +92,7 @@ extension Array.Parallel where C == Array {
 }
 
 //MARK: async
-extension Array.Parallel where C == Array {
+extension Parallel where StructureData == Array<Element> {
     public func map<T>(
         requiredNumber threads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,

@@ -1,7 +1,7 @@
 /*
  
  Project: Octopus
- File: Array+Parallel+Method+Filter..swift
+ File: Parallel+Method+Filter.swift
  Created by: Egor Boyko
  Date: 03.04.2023
  
@@ -12,7 +12,7 @@
 import Foundation
 
 //MARK: Default
-extension Array.Parallel where C == Array {
+extension Parallel where StructureData == Array<Element> {
     ///Returns an array containing, in order, the elements of the sequence that satisfy the given predicate.
     ///
     /// This example uses filter(_:) to include only values greater than twenty-one.
@@ -53,7 +53,7 @@ extension Array.Parallel where C == Array {
             isIncluded: @escaping (Element) throws -> Bool,
             _ rethrow: (_ error: Error) throws -> ()
         ) rethrows -> [Element]{
-            if self.array.isEmpty {
+            if self.structureData.isEmpty {
                 return []
             }
             var storage: [Int: [Element]] = [:]
@@ -67,7 +67,7 @@ extension Array.Parallel where C == Array {
                     return
                 }
                 do {
-                    let output = try parallel.array[slice].filter(isIncluded)
+                    let output = try parallel.structureData[slice].filter(isIncluded)
                     parallel.insertQueue.async {
                         storage[iteration] = output
                         group.leave()
@@ -96,7 +96,7 @@ extension Array.Parallel where C == Array {
 }
 
 //MARK: async with throws
-extension Array.Parallel where C == Array {
+extension Parallel where StructureData == Array<Element> {
     ///Asynchronously Returns an array containing, in order, the elements of a sequence that satisfy the given predicate, with the ability to handle errors.
     ///
     /// This example uses filter(_:) return an error.
@@ -164,7 +164,7 @@ extension Array.Parallel where C == Array {
 }
 
 //MARK: async
-extension Array.Parallel where C == Array {
+extension Parallel where StructureData == Array<Element> {
     ///Asynchronously Returns an array containing, in order, the elements of a sequence that satisfy the given predicate.
     ///
     /// This example uses filter(_:) to include only values greater than twenty-one.

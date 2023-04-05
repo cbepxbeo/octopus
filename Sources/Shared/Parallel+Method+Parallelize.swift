@@ -1,7 +1,7 @@
 /*
  
  Project: Octopus
- File: Array+Parallel+Method+Parallelize.swift
+ File: Parallel+Method+Parallelize.swift
  Created by: Egor Boyko
  Date: 03.04.2023
  
@@ -10,7 +10,7 @@
 */
 import Foundation
 
-extension Array.Parallel {
+extension Parallel {
     internal func parallelize(
         amountThreads: Int,
         group: DispatchGroup,

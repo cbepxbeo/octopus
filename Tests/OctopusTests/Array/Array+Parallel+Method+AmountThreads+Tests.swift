@@ -12,7 +12,7 @@ import XCTest
 @testable import Octopus
 
 final class ArrayParallelMethodAmountThreadsTests: XCTestCase, TestArrayProvider {
-    var parallel: Array<FakeData>.Parallel<FakeData>!
+    var parallel: Parallel<Array<FakeData>, FakeData>!
     
     override func setUpWithError() throws {
         try super.setUpWithError()
