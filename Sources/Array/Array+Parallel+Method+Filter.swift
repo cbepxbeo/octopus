@@ -13,6 +13,28 @@ import Foundation
 
 //MARK: Default
 extension Array.Parallel {
+    ///Returns an array containing, in order, the elements of the sequence that satisfy the given predicate.
+    ///
+    /// This example uses filter(_:) to include only values greater than twenty-one.
+    /// ```
+    /// let exampleArray: [Int] = [5, 8, 13, 21, 34, 55, 89 ]
+    /// let result = exampleArray.parallel().filter{ $0 > 21 }
+    /// print(result)
+    /// // Prints "[34, 55, 89]"
+    /// ```
+    ///- Complexity: O(n), where n is the length of the sequence.
+    ///- Parameters:
+    ///     - requiredNumber:
+    ///         Number of threads required to execute. Default active processor count.
+    ///- Parameters:
+    ///     - priority:
+    ///         The priority with which work will be performed in multiple threads.
+    ///- Parameters:
+    ///     - isIncluded:
+    ///         A closure that takes an element of the sequence as its argument and returns a Boolean
+    ///         value indicating whether the element should be included in the returned array.
+    ///- Note: iteration will be performed by several threads.
+    ///- Returns: An array of the elements that isIncluded allowed.
     public func filter(
         requiredNumber threads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,
@@ -75,6 +97,56 @@ extension Array.Parallel {
 
 //MARK: async with throws
 extension Array.Parallel {
+    ///Asynchronously Returns an array containing, in order, the elements of a sequence that satisfy the given predicate, with the ability to handle errors.
+    ///
+    /// This example uses filter(_:) return an error.
+    /// ```
+    /// let exampleArray: [Int] = [5, 8, 13, 21, 34, 55, 89 ]
+    /// do {
+    ///     let result = try await self.exampleArray.parallel().filter{ item throws -> Bool in
+    ///         if item == 55 {
+    ///             throw MyError.example
+    ///         } else {
+    ///              return item > 21
+    ///         }
+    ///     }
+    /// }
+    /// catch {
+    ///     print(error)
+    ///     // Prints "example"
+    /// }
+    /// ```
+    /// This example uses filter(_:) to include only values greater than twenty-one.
+    /// ```
+    /// let exampleArray: [Int] = [5, 8, 13, 21, 34, 55, 89 ]
+    /// do {
+    ///     let result = try await self.exampleArray.parallel().filter{ item throws -> Bool in
+    ///         if item == 0 {
+    ///             throw MyError.example
+    ///         } else {
+    ///              return item > 21
+    ///         }
+    ///     }
+    ///     print(result)
+    ///     // Prints "[34, 55, 89]"
+    /// }
+    /// catch {
+    ///     // .. will never be fulfilled
+    /// }
+    /// ```
+    ///- Complexity: O(n), where n is the length of the sequence.
+    ///- Note: iteration will be performed by several threads.
+    ///- Parameters:
+    ///     - requiredNumber:
+    ///         Number of threads required to execute. Default active processor count.
+    ///- Parameters:
+    ///     - priority:
+    ///         The priority with which work will be performed in multiple threads.
+    ///- Parameters:
+    ///     - isIncluded:
+    ///         A closure that takes an element of the sequence as its argument and returns a Boolean
+    ///         value indicating whether the element should be included in the returned array.
+    ///- Returns: An array of the elements that isIncluded allowed.
     public func filter(
         requiredNumber threads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,
@@ -93,6 +165,27 @@ extension Array.Parallel {
 
 //MARK: async
 extension Array.Parallel {
+    ///Asynchronously Returns an array containing, in order, the elements of a sequence that satisfy the given predicate.
+    ///
+    /// This example uses filter(_:) to include only values greater than twenty-one.
+    /// ```
+    /// let exampleArray: [Int] = [5, 8, 13, 21, 34, 55, 89 ]
+    /// let result = await self.exampleArray.parallel().filter{ $0 > 21 }
+    /// // Prints "[34, 55, 89]"
+    /// ```
+    ///- Complexity: O(n), where n is the length of the sequence.
+    ///- Note: iteration will be performed by several threads.
+    ///- Parameters:
+    ///     - requiredNumber:
+    ///         Number of threads required to execute. Default active processor count.
+    ///- Parameters:
+    ///     - priority:
+    ///         The priority with which work will be performed in multiple threads.
+    ///- Parameters:
+    ///     - isIncluded:
+    ///         A closure that takes an element of the sequence as its argument and returns a Boolean
+    ///         value indicating whether the element should be included in the returned array.
+    ///- Returns: An array of the elements that isIncluded allowed.
     public func filter(
         requiredNumber threads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,
