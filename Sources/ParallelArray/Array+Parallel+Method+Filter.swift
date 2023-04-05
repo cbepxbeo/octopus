@@ -12,7 +12,7 @@
 import Foundation
 
 //MARK: Default
-extension Array.Parallel {
+extension Array.Parallel where C == Array {
     ///Returns an array containing, in order, the elements of the sequence that satisfy the given predicate.
     ///
     /// This example uses filter(_:) to include only values greater than twenty-one.
@@ -96,7 +96,7 @@ extension Array.Parallel {
 }
 
 //MARK: async with throws
-extension Array.Parallel {
+extension Array.Parallel where C == Array {
     ///Asynchronously Returns an array containing, in order, the elements of a sequence that satisfy the given predicate, with the ability to handle errors.
     ///
     /// This example uses filter(_:) return an error.
@@ -164,7 +164,7 @@ extension Array.Parallel {
 }
 
 //MARK: async
-extension Array.Parallel {
+extension Array.Parallel where C == Array {
     ///Asynchronously Returns an array containing, in order, the elements of a sequence that satisfy the given predicate.
     ///
     /// This example uses filter(_:) to include only values greater than twenty-one.

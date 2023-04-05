@@ -10,7 +10,7 @@
 */
 
 extension Array {
-    public func parallel() -> Array.Parallel<Element> {
+    public func parallel() -> Array.Parallel<Array<Element>> {
         .init(array: self)
     }
 }

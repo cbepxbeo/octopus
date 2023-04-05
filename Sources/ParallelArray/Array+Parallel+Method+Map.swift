@@ -11,7 +11,7 @@
 
 import Foundation
 
-extension Array.Parallel {
+extension Array.Parallel where C == Array {
     public func map<T>(
         requiredNumber threads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,
@@ -74,7 +74,7 @@ extension Array.Parallel {
 }
 
 //MARK: async with throws
-extension Array.Parallel {
+extension Array.Parallel where C == Array {
     public func map<T>(
         requiredNumber threads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,
@@ -92,7 +92,7 @@ extension Array.Parallel {
 }
 
 //MARK: async
-extension Array.Parallel {
+extension Array.Parallel where C == Array {
     public func map<T>(
         requiredNumber threads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,
