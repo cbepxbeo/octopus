@@ -10,6 +10,12 @@
 */
 
 import Foundation
+import OSLog
+
+fileprivate let logger: Logger = .init(
+    subsystem: "octopus",
+    category: "parallel-array-method-map"
+)
 
 extension Parallel where StructureData == Array<Element> {
     public func map<T>(
@@ -33,6 +39,12 @@ extension Parallel where StructureData == Array<Element> {
             if self.structureData.isEmpty {
                 return []
             }
+            
+            if self.structureData.count < self.amountThreads(threads) * 2 {
+                logger.debug("Not enough for parallel computing")
+                return try structureData.map(transform)
+            }
+            
             var storage: [Int: [T]] = [:]
             let group = DispatchGroup()
             var errors: [(String, Swift.Error)] = []

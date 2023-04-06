@@ -32,6 +32,23 @@ extension TestProvider {
         return temp
     }
     
+    func getDictionary(random: Bool = true, iterations: Int = 100) -> [Int: FakeData] {
+        var temp: [Int: FakeData] = [:]
+        let end = random ? Int.random(in: 1...1000) : iterations
+        for i in 0...end{
+            temp[i] = .init(int: i, string: "error", bool: false)
+            for z in 0...(random ? Int.random(in: 1...1000) : iterations){
+                temp[end + z] =
+                    .init(
+                        int: z,
+                        string: "\((random ? Int.random(in: 1...1000) : z))",
+                        bool: Bool.random()
+                    )
+            }
+        }
+        return temp
+    }
+    
     func filterDefaultTask(_ value: FakeData) -> Bool{
         value.bool && value.int == 99999
     }

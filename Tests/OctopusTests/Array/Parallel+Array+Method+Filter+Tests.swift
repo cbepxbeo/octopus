@@ -9,7 +9,13 @@
 */
 
 import XCTest
+import OSLog
 @testable import Octopus
+
+fileprivate let logger: Logger = .init(
+    subsystem: "octopus",
+    category: "tests-parallel-array-method-filter"
+)
 
 final class ParallelArrayMethodFilterTests: XCTestCase, TestProvider {
     var randomArray: Array<FakeData>!
@@ -26,14 +32,37 @@ final class ParallelArrayMethodFilterTests: XCTestCase, TestProvider {
         try super.tearDownWithError()
     }
     
+    func testMinArray() throws {
+        let array = [FakeData()]
+        let result = array.parallel().filter{ _ in true }
+        XCTAssert(result.count == 1)
+    }
+    
+    func testActiveProcessorCount() throws {
+        let activeProcessorCount = ProcessInfo.processInfo.activeProcessorCount
+        var array = Array(repeating: FakeData(), count: activeProcessorCount)
+        logger.debug("testActiveProcessorCount: array count - \(array.count)")
+        var result = array.parallel().filter{ _ in true }
+        logger.debug("testActiveProcessorCount: result count - \(result.count)")
+        XCTAssert(result.count == activeProcessorCount)
+        array.append(.init())
+        logger.debug("testActiveProcessorCount: array count - \(array.count)")
+        result = array.parallel().filter{ _ in true }
+        logger.debug("testActiveProcessorCount: result count - \(result.count)")
+        XCTAssert(result.count == (activeProcessorCount + 1))
+    }
+    
+    
     func testSpeed() throws {
         let timer = TestTimer.start()
         let _ = self.randomArray.filter(self.filterDefaultTask)
         let defaultFilterTime = timer.stop()
+        logger.debug("testSpeed: defaultFilterTime - \(defaultFilterTime)")
         
         timer.start()
         let _ = self.randomArray.parallel().filter(self.filterDefaultTask)
         let parallelFilterTime = timer.stop()
+        logger.debug("testSpeed: parallelFilterTime - \(parallelFilterTime)")
         XCTAssert(defaultFilterTime > parallelFilterTime)
     }
     

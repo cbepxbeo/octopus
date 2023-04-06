@@ -10,6 +10,12 @@
  */
 
 import Foundation
+import OSLog
+
+fileprivate let logger: Logger = .init(
+    subsystem: "octopus",
+    category: "parallel-array-method-filter"
+)
 
 //MARK: Default
 extension Parallel where StructureData == Array<Element> {
@@ -54,8 +60,15 @@ extension Parallel where StructureData == Array<Element> {
             _ rethrow: (_ error: Error) throws -> ()
         ) rethrows -> [Element]{
             if self.structureData.isEmpty {
+                logger.debug("structureData empty")
                 return []
             }
+            
+            if self.structureData.count < self.amountThreads(threads) * 2 {
+                logger.debug("Not enough for parallel computing")
+                return try structureData.filter(isIncluded)
+            }
+            
             var storage: [Int: [Element]] = [:]
             let group = DispatchGroup()
             var errors: [(String, Error)] = []
