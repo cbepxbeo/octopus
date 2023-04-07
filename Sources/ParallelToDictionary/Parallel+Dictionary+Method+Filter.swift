@@ -31,7 +31,7 @@ extension Parallel {
     ///     dictionary[item] = item % 2 == 0 ? arrayA : arrayB
     /// }
     ///
-    /// let parallelResult = dictionary.parallel().filter {
+    /// let result = dictionary.parallel().filter {
     ///     $0.value.reduce(0) { $0 + $1 } > 1000
     /// }
     /// // Up to two times faster execution speed
@@ -145,7 +145,7 @@ extension Parallel {
 extension Parallel {
     ///Asynchronously returns a new dictionary containing the key-value pairs of the dictionary that satisfy the given predicate, with the ability to handle errors.
     ///
-    /// This example uses filter(_:) example that gives a performance boost.
+    /// This example uses filter(_:) return an error.
     /// ```
     /// let arrayA: [Int] = .init(repeating: 10, count: 100)
     /// let arrayB: [Int] = .init(repeating: 20, count: 100)
@@ -155,12 +155,34 @@ extension Parallel {
     ///     dictionary[item] = item % 2 == 0 ? arrayA : arrayB
     /// }
     ///
-    /// let parallelResult = dictionary.parallel().filter {
-    ///     $0.value.reduce(0) { $0 + $1 } > 1000
+    /// do {
+    ///     let result = try await dictionary.parallel().filter {
+    ///         if $0.value.reduce(0, { $0 + $1 }) > 1000 {
+    ///             throw MyError.example
+    ///         } else {
+    ///             return true
+    ///         }
+    ///     }
+    /// } catch {
+    ///     print(error)
+    ///     //Prints all errors
     /// }
-    /// // Up to two times faster execution speed
-    /// ```
     ///
+    /// ```
+    /// This example uses filter(_:) example that gives a performance boost.
+    /// ```
+    /// do {
+    ///     let result = try await dictionary.parallel().filter {
+    ///         if $0.value.reduce(0, { $0 + $1 }) == 0 {
+    ///             throw MyError.example
+    ///         } else {
+    ///             return true
+    ///         }
+    ///     }
+    /// } catch {
+    ///     // .. will never be fulfilled
+    /// }
+    /// ```
     ///- Complexity: O(n), where n is the length of the sequence.
     ///- Parameters:
     ///     - requiredNumber:
@@ -209,7 +231,7 @@ extension Parallel {
     ///     dictionary[item] = item % 2 == 0 ? arrayA : arrayB
     /// }
     ///
-    /// let parallelResult = dictionary.parallel().filter {
+    /// let result = await dictionary.parallel().filter {
     ///     $0.value.reduce(0) { $0 + $1 } > 1000
     /// }
     /// // Up to two times faster execution speed

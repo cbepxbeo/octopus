@@ -17,7 +17,6 @@ fileprivate let logger: Logger = .init(
 )
 
 final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
-    
     func testMerge() {
         var dictoinary: [Int: FakeData] = [:]
         for item in 1...20 {
@@ -27,7 +26,6 @@ final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
         let result = dictoinary.parallel().filter { $0.key > 10 && $0.key < 15 }
         XCTAssert(result.count == 4)
     }
-    
     
     func testSpeedDefaultDictionarySize() throws {
         let optionValue = 20
@@ -76,30 +74,4 @@ final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
         logger.debug("testSpeedVeryBigDictionarySize: parallelFilterTime - \(parallelFilterTime)")
         XCTAssert(defaultFilterTime > parallelFilterTime)
     }
-    
-    
-    func testExample() throws {
-        let arrayA: [Int] = .init(repeating: 10, count: 100)
-        let arrayB: [Int] = .init(repeating: 20, count: 100)
-        
-        var dictionary: [Int: [Int]] = [:]
-        for item in 0...1000 {
-            dictionary[item] = item % 2 == 0 ? arrayA : arrayB
-        }
-        let timer = TestTimer.start()
-        let _ = dictionary.filter{
-            $0.value.reduce(0) { $0 + $1 } > 1000
-        }
-        let defaultFilterTime = timer.stop()
-        logger.debug("testSpeed: defaultFilterTime - \(defaultFilterTime)")
-        
-        timer.start()
-        let _ = dictionary.parallel().filter {
-            $0.value.reduce(0) { $0 + $1 } > 1000
-        }
-        let parallelFilterTime = timer.stop()
-        logger.debug("testSpeed: parallelFilterTime - \(parallelFilterTime)")
-        XCTAssert(defaultFilterTime > parallelFilterTime)
-    }
-    
 }

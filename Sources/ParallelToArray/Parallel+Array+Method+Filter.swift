@@ -131,7 +131,6 @@ extension Parallel where StructureData == Array<Element> {
     /// ```
     /// This example uses filter(_:) to include only values greater than twenty-one.
     /// ```
-    /// let exampleArray: [Int] = [5, 8, 13, 21, 34, 55, 89 ]
     /// do {
     ///     let result = try await self.exampleArray.parallel().filter{ item throws -> Bool in
     ///         if item == 0 {
