@@ -9,6 +9,9 @@ Catch all errors with information about the occurrence interval.
   - Parallel map
   - Parallel async filter
   - Parallel async map
+- Dictionary
+  - Parallel filter
+  - Parallel async filter
 
 ## Installation
 
@@ -132,6 +135,65 @@ do {
     }
 } catch {
     print(error) //prints all errors to the console
+}
+
+```
+
+### Dictionary
+#### Filter
+The use makes sense if the filter condition requires additional calculations, such as a nested loop. Otherwise, single-threaded dictionary filtering will be faster because it doesn't require merging. The efficiency of work in relation to the complexity of nested calculations is directly proportional to the size of the dictionary - the larger the size, the less complexity is needed to satisfy the conditions for achieving maximum performance.  
+
+<b>When using a dictionary, just like with an array, you can specify the required number of threads and the execution priority.</b>
+
+```swift
+import Octopus
+
+let arrayA: [Int] = .init(repeating: 10, count: 100)
+let arrayB: [Int] = .init(repeating: 20, count: 100)
+
+var dictionary: [Int: [Int]] = [:]
+for item in 0...1000 {
+    dictionary[item] = item % 2 == 0 ? arrayA : arrayB
+}
+
+// Up to two times faster execution speed
+
+let result = dictionary.parallel().filter {
+    $0.value.reduce(0) { $0 + $1 } > 1000
+}
+
+// .. Error processing.  
+
+do {
+    let _ = try dictionary.parallel().filter {
+        if $0.value.reduce(0, { $0 + $1 }) > 1000 {
+            throw MyError.example
+        } else {
+            return true
+        }
+    }
+} catch {
+    print(error)
+}
+
+// .. Async without errors.
+
+let result = dictionary.parallel().filter {
+    $0.value.reduce(0) { $0 + $1 } > 1000
+}
+
+// .. Async with errors.
+
+do {
+   let _ = try await dictionary.parallel().filter {
+       if $0.value.reduce(0, { $0 + $1 }) > 1000 {
+           throw MyError.example
+       } else {
+           return true
+       }
+   }
+} catch {
+   print(error) //prints all errors to the console
 }
 
 ```
