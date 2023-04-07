@@ -118,6 +118,28 @@ extension TestProvider {
         }
     }
     
+    func mapTask(option: TestProviderOption) -> ((key: FakeData, value: FakeData)) -> String{
+        switch option {
+        case .low:
+            return { $0.value.string + "\($0.value.int)" }
+        case .medium:
+            return {
+                for _ in 1...100 {}
+                return $0.value.string + "\($0.value.int)"
+            }
+        case .high:
+            return {
+                for _ in 1...500 {}
+                return $0.value.string + "\($0.value.int)"
+            }
+        case .custom(let end):
+            return {
+                for _ in 1...end {}
+                return $0.value.string + "\($0.value.int)"
+            }
+        }
+    }
+    
 }
 
 
