@@ -18,16 +18,13 @@ fileprivate let logger: Logger = .init(
 )
 
 final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
-    var staticDictionary: Dictionary<Int, FakeData>!
-    var intDic: Dictionary<Int, Int>!
+    var staticDictionary: Dictionary<FakeData, FakeData>!
     override func setUpWithError() throws {
         try super.setUpWithError()
         self.staticDictionary = self.getDictionary(random: false, iterations: 10)
-        self.intDic = self.getDic()
     }
     override func tearDownWithError() throws {
         self.staticDictionary = nil
-        self.intDic = nil
         try super.tearDownWithError()
     }
     
@@ -37,92 +34,22 @@ final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
             dictoinary[item] = .init()
         }
         
-        let first = dictoinary.parallel().filter { key in
-            key > 10 && key < 15
-        }
-        print(first.count)
+        let result = dictoinary.parallel().filter { $0 > 10 && $0 < 15 }
+        XCTAssert(result.count == 4)
     }
-    
-    
     
     
     func testSpeed() throws {
         let timer = TestTimer.start()
-        let _ = self.staticDictionary.filter { element in
-            element.key % 2 == 0
-        }
+        let _ = self.staticDictionary.filter(self.filterTask(option: .medium))
         let defaultFilterTime = timer.stop()
         logger.debug("testSpeed: defaultFilterTime - \(defaultFilterTime)")
         
         timer.start()
-        let _ = self.staticDictionary.parallel().filter { key in
-            key % 2 == 0
-        }
+        let _ = self.staticDictionary.parallel().filter(self.filterTask(option: .medium))
         let parallelFilterTime = timer.stop()
         logger.debug("testSpeed: parallelFilterTime - \(parallelFilterTime)")
-        XCTAssert(true)//defaultFilterTime > parallelFilterTime)
-    }
-    
-    func testDefaultPerfomance() {
-        measure {
-            logger.debug("testDefaultPerfomance: - \(self.staticDictionary.count)")
-            let result = self.staticDictionary.filter { element in
-                var temp: Int = 0
-                for i in 0...5000 {
-                    temp += i
-                }
-                return element.key % 2 == 0 && element.key != temp
-            }
-            logger.debug("testDefaultPerfomance: - \(result.count)")
-        }
-    }
-    
-    func testParallelPerfomance() {
-        measure {
-            logger.debug("testParallelPerfomance: - \(self.staticDictionary.count)")
-            let result = self.staticDictionary.parallel().filter { key in
-                var temp: Int = 0
-                for i in 0...5000 {
-                    temp += i
-                }
-                return key % 2 == 0 && key != temp
-            }
-            print("--------------------------------")
-            logger.debug("testParallelPerfomance: - \(result.count)")
-        }
-    }
-    
-    
-    func getDic() -> [Int: Int] {
-        var temp: [Int: Int] = [:]
-        for item in 0...1000000 {
-            temp[item] = item
-        }
-        print("---")
-        return temp
-    }
-    
-    
-    func testDefaultPerfomanceo() {
-        
-        measure {
-            logger.debug("testDefaultPerfomance: - \(self.intDic.count)")
-            let result = self.intDic.filter { element in
-                return element.key % 2 == 0
-            }
-            logger.debug("testDefaultPerfomance: - \(result.count)")
-        }
-    }
-    
-    func testParallelPerfomanceo() {
-        measure {
-            logger.debug("testParallelPerfomance: - \(self.intDic.count)")
-            let result = self.intDic.parallel().filter { key in
-                return key % 2 == 0
-            }
-            logger.debug("testParallelPerfomance: - \(result.count)")
-            print("--------------------------------------")
-        }
+        XCTAssert(defaultFilterTime > parallelFilterTime)
     }
     
 }

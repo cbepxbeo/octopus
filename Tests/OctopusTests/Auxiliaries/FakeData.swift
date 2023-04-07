@@ -7,7 +7,7 @@
  
 */
 
-struct FakeData {
+struct FakeData: Hashable {
     let int: Int
     let string: String
     let bool: Bool

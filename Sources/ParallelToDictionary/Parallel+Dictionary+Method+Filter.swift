@@ -1,9 +1,13 @@
-//
-//  File.swift
-//  
-//
-//  Created by Егор Бойко on 06.04.2023.
-//
+/*
+ 
+ Project: Octopus
+ File: Parallel+Dictionary+Method+Filter.swift
+ Created by: Egor Boyko
+ Date: 06.04.2023
+ 
+ Status: #In progress | #Not decorated
+ 
+*/
 
 import Foundation
 
@@ -35,6 +39,7 @@ extension Parallel {
             _ rethrow: (_ error: Error) throws -> ()
         ) rethrows -> [Key: Value] {
             if self.structureData.isEmpty {
+                logger.debug("Structure data (Dictionary) - empty")
                 return [:]
             }
             

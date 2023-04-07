@@ -55,12 +55,12 @@ final class ParallelArrayMethodFilterTests: XCTestCase, TestProvider {
     
     func testSpeed() throws {
         let timer = TestTimer.start()
-        let _ = self.randomArray.filter(self.filterDefaultTask)
+        let _ = self.randomArray.filter(self.filterTask(option: .low))
         let defaultFilterTime = timer.stop()
         logger.debug("testSpeed: defaultFilterTime - \(defaultFilterTime)")
         
         timer.start()
-        let _ = self.randomArray.parallel().filter(self.filterDefaultTask)
+        let _ = self.randomArray.parallel().filter(self.filterTask(option: .low))
         let parallelFilterTime = timer.stop()
         logger.debug("testSpeed: parallelFilterTime - \(parallelFilterTime)")
         XCTAssert(defaultFilterTime > parallelFilterTime)
@@ -69,7 +69,7 @@ final class ParallelArrayMethodFilterTests: XCTestCase, TestProvider {
     func testPerfomance() throws {
         //M1, Simulator, 14 Pro Max, iOS 16.2, xcode 14.2
         self.customMeasure(ms: 90){
-            let _ = self.staticArray.parallel().filter(self.filterDefaultTask)
+            let _ = self.staticArray.parallel().filter(self.filterTask(option: .low))
         }
     }
 }
