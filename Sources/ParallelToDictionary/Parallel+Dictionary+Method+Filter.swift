@@ -59,7 +59,7 @@ extension Parallel {
                     group.leave()
                     return
                 }
-                
+                logger.debug("Вычисляю срез - \(iteration)")
                 let slice: Dictionary<Key, Value>.SubSequence
                 let iterationIndex = parallel.structureData.index(structureDataStartIndex, offsetBy: end)
 
@@ -74,6 +74,7 @@ extension Parallel {
                     let temp = parallel.structureData.prefix(through: iterationIndex)
                     slice = temp.suffix(parallel.sliceData.remainder + parallel.sliceData.step)
                 }
+                logger.debug("Вычислил - \(iteration)")
                 //print("===\(iteration)")
                 //print(slice.map{ $0.value })
                 
@@ -81,7 +82,9 @@ extension Parallel {
                     let output = try slice.filter{ try isIncluded($0.key) }
                     parallel.insertQueue.async {
                         //storage[iteration] = output
+                        logger.debug("Выполняю мердж - \(iteration)")
                         storage2.merge(output) { (current, _) in current }
+                        logger.debug("Выполнил - \(iteration)")
                         group.leave()
                     }
                     
@@ -129,7 +132,36 @@ extension Parallel {
                     try rethrow(OctopusError.alone(message: first.0, error: first.1))
                 }
             }
-            print(storage2.randomElement())
+            
+//            var storage3: Dictionary<Key, Value> = [:]
+//            var storage4: Dictionary<Key, Value> = [:]
+//
+//            let to2 = DispatchQueue(label: "sdf")
+//            let to4 = DispatchQueue(label: "sdf")
+//
+//            let groupdd = DispatchGroup()
+//
+//            for item in 1...storage.count {
+//                if item % 2 == 0 {
+//                    groupdd.enter()
+//                    to2.async {
+//                        storage3.merge(storage[item]!){ (current, _) in current }
+//                        groupdd.leave()
+//                    }
+//                } else {
+//                    groupdd.enter()
+//                    to4.async {
+//
+//                        storage4.merge(storage[item]!){ (current, _) in current }
+//                        groupdd.leave()
+//                    }
+//                }
+//            }
+//            groupdd.wait()
+//
+//            storage3.merge(storage4){ (current, _) in current }
+//            return storage3
+            //print(storage2.randomElement())
             
             return storage2
 //            return storage.reduce([:], { x, y in

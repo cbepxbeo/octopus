@@ -19,13 +19,15 @@ fileprivate let logger: Logger = .init(
 
 final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
     var staticDictionary: Dictionary<Int, FakeData>!
-    
+    var intDic: Dictionary<Int, Int>!
     override func setUpWithError() throws {
         try super.setUpWithError()
-        self.staticDictionary = self.getDictionary(random: false, iterations: 3000)
+        self.staticDictionary = self.getDictionary(random: false, iterations: 10)
+        self.intDic = self.getDic()
     }
     override func tearDownWithError() throws {
         self.staticDictionary = nil
+        self.intDic = nil
         try super.tearDownWithError()
     }
     
@@ -90,10 +92,22 @@ final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
         }
     }
     
+    
+    func getDic() -> [Int: Int] {
+        var temp: [Int: Int] = [:]
+        for item in 0...1000000 {
+            temp[item] = item
+        }
+        print("---")
+        return temp
+    }
+    
+    
     func testDefaultPerfomanceo() {
+        
         measure {
-            logger.debug("testDefaultPerfomance: - \(self.staticDictionary.count)")
-            let result = self.staticDictionary.filter { element in
+            logger.debug("testDefaultPerfomance: - \(self.intDic.count)")
+            let result = self.intDic.filter { element in
                 return element.key % 2 == 0
             }
             logger.debug("testDefaultPerfomance: - \(result.count)")
@@ -102,12 +116,12 @@ final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
     
     func testParallelPerfomanceo() {
         measure {
-            logger.debug("testParallelPerfomance: - \(self.staticDictionary.count)")
-            let result = self.staticDictionary.parallel().filter { key in
+            logger.debug("testParallelPerfomance: - \(self.intDic.count)")
+            let result = self.intDic.parallel().filter { key in
                 return key % 2 == 0
             }
-            print("--------------------------------")
             logger.debug("testParallelPerfomance: - \(result.count)")
+            print("--------------------------------------")
         }
     }
     
