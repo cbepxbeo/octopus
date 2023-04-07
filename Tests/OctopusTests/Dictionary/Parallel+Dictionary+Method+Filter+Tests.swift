@@ -22,7 +22,7 @@ final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
     
     override func setUpWithError() throws {
         try super.setUpWithError()
-        self.staticDictionary = self.getDictionary(random: false, iterations: 5000)
+        self.staticDictionary = self.getDictionary(random: false, iterations: 3000)
     }
     override func tearDownWithError() throws {
         self.staticDictionary = nil
@@ -66,7 +66,7 @@ final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
             logger.debug("testDefaultPerfomance: - \(self.staticDictionary.count)")
             let result = self.staticDictionary.filter { element in
                 var temp: Int = 0
-                for i in 0...50 {
+                for i in 0...5000 {
                     temp += i
                 }
                 return element.key % 2 == 0 && element.key != temp
@@ -80,7 +80,7 @@ final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
             logger.debug("testParallelPerfomance: - \(self.staticDictionary.count)")
             let result = self.staticDictionary.parallel().filter { key in
                 var temp: Int = 0
-                for i in 0...50 {
+                for i in 0...5000 {
                     temp += i
                 }
                 return key % 2 == 0 && key != temp

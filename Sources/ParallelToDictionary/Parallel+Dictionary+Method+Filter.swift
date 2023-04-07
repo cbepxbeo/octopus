@@ -43,7 +43,7 @@ extension Parallel {
                 return try structureData.filter{ try isIncluded($0.0) }
             }
             
-            
+            let resultUpdateQueue = DispatchQueue(label: "--", attributes: .concurrent)
             var storage: [Int:  [Slice<Dictionary<Key, Value>>.Element]] = [:]
             var storage2: Dictionary<Key, Value> = [:]
             let structureDataStartIndex = self.structureData.startIndex
@@ -84,6 +84,13 @@ extension Parallel {
                         storage2.merge(output) { (current, _) in current }
                         group.leave()
                     }
+                    
+//                    DispatchQueue.global(qos: .userInitiated).async {
+//                        resultUpdateQueue.sync(flags: .barrier) {
+//                            storage2.merge(output) { (current, _) in current }
+//                            group.leave()
+//                        }
+//                    }
                 }
                 catch {
                     parallel.insertQueue.async {
