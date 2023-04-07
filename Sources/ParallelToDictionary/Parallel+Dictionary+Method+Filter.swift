@@ -10,7 +10,6 @@
 */
 
 import Foundation
-
 import OSLog
 
 fileprivate let logger: Logger = .init(
