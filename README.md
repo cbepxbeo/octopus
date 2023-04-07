@@ -1,6 +1,6 @@
-# Parallel Sequence for Swift. 
+# Parallel Collection for Swift. 
 
-Use to achieve better performance on mutations and sequence transformations.  
+Use to achieve better performance on filtering and sequence transformations.  
 Catch all errors with information about the occurrence interval.
 ## Implemented
 
