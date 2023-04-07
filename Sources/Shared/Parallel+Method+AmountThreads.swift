@@ -1,7 +1,7 @@
 /*
  
  Project: Octopus
- File: Array+Parallel+Method+AmountThreads.swift
+ File: Parallel+Method+AmountThreads.swift
  Created by: Egor Boyko
  Date: 03.04.2023
  
@@ -11,7 +11,7 @@
 
 import Foundation
 
-extension Array.Parallel {
+extension Parallel {
     internal func amountThreads(_ amount: Int?) -> Int {
         if let amount {
             let max = ProcessInfo.processInfo.activeProcessorCount
