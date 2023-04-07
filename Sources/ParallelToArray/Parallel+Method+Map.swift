@@ -1,7 +1,7 @@
 /*
  
  Project: Octopus
- File: Array+Parallel+Method+Map.swift
+ File: Parallel+Method+Map.swift
  Created by: Egor Boyko
  Date: 03.04.2023
  
@@ -10,8 +10,14 @@
 */
 
 import Foundation
+import OSLog
 
-extension Array.Parallel {
+fileprivate let logger: Logger = .init(
+    subsystem: "octopus",
+    category: "parallel-array-method-map"
+)
+
+extension Parallel where StructureData == Array<Element> {
     public func map<T>(
         requiredNumber threads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,
@@ -30,9 +36,15 @@ extension Array.Parallel {
             transform: @escaping (Element) throws -> T,
             _ rethrow: (_ error: Swift.Error) throws -> ()
         ) rethrows -> [T] {
-            if self.array.isEmpty {
+            if self.structureData.isEmpty {
                 return []
             }
+            
+            if self.structureData.count < self.amountThreads(threads) * 2 {
+                logger.debug("Not enough for parallel computing")
+                return try structureData.map(transform)
+            }
+            
             var storage: [Int: [T]] = [:]
             let group = DispatchGroup()
             var errors: [(String, Swift.Error)] = []
@@ -44,7 +56,7 @@ extension Array.Parallel {
                     return
                 }
                 do {
-                    let output = try parallel.array[slice].map(transform)
+                    let output = try parallel.structureData[slice].map(transform)
                     parallel.insertQueue.async {
                         storage[iteration] = output
                         group.leave()
@@ -74,7 +86,7 @@ extension Array.Parallel {
 }
 
 //MARK: async with throws
-extension Array.Parallel {
+extension Parallel where StructureData == Array<Element> {
     public func map<T>(
         requiredNumber threads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,
@@ -92,7 +104,7 @@ extension Array.Parallel {
 }
 
 //MARK: async
-extension Array.Parallel {
+extension Parallel where StructureData == Array<Element> {
     public func map<T>(
         requiredNumber threads: Int? = nil,
         priority: DispatchQoS.QoSClass = .userInteractive,
