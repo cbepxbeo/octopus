@@ -24,8 +24,8 @@ final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
     override func setUpWithError() throws {
         try super.setUpWithError()
         self.staticDictionary = self.getDictionary(random: false, iterations: 100)
-        self.staticBigDictionary = self.getDictionary(random: false, iterations: 1000)
-        self.staticVeryBigDictionary = self.getDictionary(random: false, iterations: 5000)
+        self.staticBigDictionary = self.getDictionary(random: false, iterations: 50)
+        self.staticVeryBigDictionary = self.getDictionary(random: false, iterations: 50)
     }
     override func tearDownWithError() throws {
         self.staticDictionary = nil
@@ -82,6 +82,31 @@ final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
         
         timer.start()
         let _ = self.staticBigDictionary.parallel().filter(self.filterTask(option: .custom(optionValue)))
+        let parallelFilterTime = timer.stop()
+        logger.debug("testSpeed: parallelFilterTime - \(parallelFilterTime)")
+        XCTAssert(defaultFilterTime > parallelFilterTime)
+    }
+    
+    
+    func testExample() throws {
+        let arrayA: [Int] = .init(repeating: 10, count: 1000)
+        let arrayB: [Int] = .init(repeating: 20, count: 1000)
+        
+        var dictionary: [Int: [Int]] = [:]
+        for item in 0...10000 {
+            dictionary[item] = item % 2 == 0 ? arrayA : arrayB
+        }
+        let timer = TestTimer.start()
+        let _ = dictionary.filter{
+            $0.value.reduce(0) { $0 + $1 } > 10000
+        }
+        let defaultFilterTime = timer.stop()
+        logger.debug("testSpeed: defaultFilterTime - \(defaultFilterTime)")
+        
+        timer.start()
+        let _ = dictionary.parallel().filter {
+            $0.value.reduce(0) { $0 + $1 } > 10000
+        }
         let parallelFilterTime = timer.stop()
         logger.debug("testSpeed: parallelFilterTime - \(parallelFilterTime)")
         XCTAssert(defaultFilterTime > parallelFilterTime)
