@@ -45,6 +45,7 @@ extension Parallel {
             
             
             var storage: [Int:  [Slice<Dictionary<Key, Value>>.Element]] = [:]
+            var storage2: Dictionary<Key, Value> = [:]
             let structureDataStartIndex = self.structureData.startIndex
             let group = DispatchGroup()
             var errors: [(String, Error)] = []
@@ -79,7 +80,8 @@ extension Parallel {
                 do {
                     let output = try slice.filter{ try isIncluded($0.key) }
                     parallel.insertQueue.async {
-                        storage[iteration] = output
+                        //storage[iteration] = output
+                        storage2.merge(output) { (current, _) in current }
                         group.leave()
                     }
                 }
@@ -120,11 +122,14 @@ extension Parallel {
                     try rethrow(OctopusError.alone(message: first.0, error: first.1))
                 }
             }
-            return storage.reduce([:], { x, y in
-                var temp = x
-                temp.merge(y.value){ (current, _) in current }
-                return temp
-            })
+            print(storage2.randomElement())
+            
+            return storage2
+//            return storage.reduce([:], { x, y in
+//                var temp = x
+//                temp.merge(y.value){ (current, _) in current }
+//                return temp
+//            })
         }
     }
 }
