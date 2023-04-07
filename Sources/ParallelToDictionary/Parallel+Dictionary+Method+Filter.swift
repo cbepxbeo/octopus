@@ -43,36 +43,73 @@ extension Parallel {
                 return try structureData.filter{ try isIncluded($0.0) }
             }
             
-            var storage: [Int: [Key: Value]] = [:]
-            var array: [(Key, Value)] = []
             
-            for (key, value) in self.structureData {
-                array.append((key, value))
-            }
-    
+            var storage: [Int:  [Slice<Dictionary<Key, Value>>.Element]] = [:]
+            let structureDataStartIndex = self.structureData.startIndex
             let group = DispatchGroup()
             var errors: [(String, Error)] = []
             
-            self.parallelize(amountThreads: self.amountThreads(threads), group: group, priority: priority) { [weak self] iteration, slice in
+            self.parallelize(
+                amountThreads: self.amountThreads(threads),
+                group: group, priority: priority
+            ) { [weak self] iteration, start, end in
                 guard let parallel = self else {
                     errors.append((Self.instanceWasFreedMessage, OctopusError.unexpectedState))
                     group.leave()
                     return
                 }
+                
+                let slice: Dictionary<Key, Value>.SubSequence
+                let iterationIndex = parallel.structureData.index(structureDataStartIndex, offsetBy: end)
+
+                if iteration == 1 {
+                    slice = parallel.structureData.prefix(parallel.sliceData.step)
+                } else if iteration != parallel.amountThreads(threads) {
+                    let temp = parallel.structureData.prefix(through: iterationIndex)
+                    //print("===\(iteration)")
+                    //print(temp)
+                    slice = temp.suffix(parallel.sliceData.step)
+                } else {
+                    let temp = parallel.structureData.prefix(through: iterationIndex)
+                    slice = temp.suffix(parallel.sliceData.remainder + parallel.sliceData.step)
+                }
+                //print("===\(iteration)")
+                //print(slice.map{ $0.value })
+                
                 do {
-                    let output = try array[slice].filter{ try isIncluded($0.0) }
-                    let dictoinary = Dictionary(output, uniquingKeysWith: { (first, _) in first })
+                    let output = try slice.filter{ try isIncluded($0.key) }
                     parallel.insertQueue.async {
-                        storage[iteration] = dictoinary
+                        storage[iteration] = output
                         group.leave()
                     }
-                } catch {
+                }
+                catch {
                     parallel.insertQueue.async {
-                        let message = "method: filter, element: \(Element.self), slice: \(slice)"
+                        let message = "method: filter, element: \(Element.self), slice: "
                         errors.append((message, error))
                         group.leave()
                     }
                 }
+                
+          
+                
+//                do {
+////                    if iteration == 1 {
+////                        let sliceA = parallel.structureData.suffix(from: <#T##Dictionary<Hashable, Value>.Index#>)
+////                    }
+////                    let needIndex = parallel.structureData.index(structureDataStartIndex, offsetBy: slice.min())
+//
+////                    parallel.insertQueue.async {
+////                        storage[iteration] = dictoinary
+////                        group.leave()
+////                    }
+//                } catch {
+//                    parallel.insertQueue.async {
+//                        let message = "method: filter, element: \(Element.self), slice: "
+//                        errors.append((message, error))
+//                        group.leave()
+//                    }
+//                }
             }
             group.wait()
             

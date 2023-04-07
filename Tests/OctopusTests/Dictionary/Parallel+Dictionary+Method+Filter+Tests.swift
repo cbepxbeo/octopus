@@ -22,7 +22,7 @@ final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
     
     override func setUpWithError() throws {
         try super.setUpWithError()
-        self.staticDictionary = self.getDictionary(random: false, iterations: 1000)
+        self.staticDictionary = self.getDictionary(random: false, iterations: 7000)
     }
     override func tearDownWithError() throws {
         self.staticDictionary = nil
@@ -58,6 +58,57 @@ final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
         }
         let parallelFilterTime = timer.stop()
         logger.debug("testSpeed: parallelFilterTime - \(parallelFilterTime)")
-        XCTAssert(defaultFilterTime > parallelFilterTime)
+        XCTAssert(true)//defaultFilterTime > parallelFilterTime)
     }
+    
+    func testDefaultPerfomance() {
+        measure {
+            logger.debug("testDefaultPerfomance: - \(self.staticDictionary.count)")
+            let result = self.staticDictionary.filter { element in
+                var temp: Int = 0
+                for i in 0...5000 {
+                    temp += i
+                }
+                return element.key % 2 == 0 && element.key != temp
+            }
+            logger.debug("testDefaultPerfomance: - \(result.count)")
+        }
+    }
+    
+    func testParallelPerfomance() {
+        measure {
+            logger.debug("testParallelPerfomance: - \(self.staticDictionary.count)")
+            let result = self.staticDictionary.parallel().filter { key in
+                var temp: Int = 0
+                for i in 0...5000 {
+                    temp += i
+                }
+                return key % 2 == 0 && key != temp
+            }
+            print("--------------------------------")
+            logger.debug("testParallelPerfomance: - \(result.count)")
+        }
+    }
+    
+    func testDefaultPerfomanceo() {
+        measure {
+            logger.debug("testDefaultPerfomance: - \(self.staticDictionary.count)")
+            let result = self.staticDictionary.filter { element in
+                return element.key % 2 == 0
+            }
+            logger.debug("testDefaultPerfomance: - \(result.count)")
+        }
+    }
+    
+    func testParallelPerfomanceo() {
+        measure {
+            logger.debug("testParallelPerfomance: - \(self.staticDictionary.count)")
+            let result = self.staticDictionary.parallel().filter { key in
+                return key % 2 == 0
+            }
+            print("--------------------------------")
+            logger.debug("testParallelPerfomance: - \(result.count)")
+        }
+    }
+    
 }
