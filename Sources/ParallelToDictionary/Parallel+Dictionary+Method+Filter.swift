@@ -43,9 +43,7 @@ extension Parallel {
                 return try structureData.filter{ try isIncluded($0.0) }
             }
             
-            let resultUpdateQueue = DispatchQueue(label: "--", attributes: .concurrent)
-            var storage: [Int:  [Slice<Dictionary<Key, Value>>.Element]] = [:]
-            var storage2: Dictionary<Key, Value> = [:]
+            var result: Dictionary<Key, Value> = [:]
             let structureDataStartIndex = self.structureData.startIndex
             let group = DispatchGroup()
             var errors: [(String, Error)] = []
@@ -59,69 +57,33 @@ extension Parallel {
                     group.leave()
                     return
                 }
-                logger.debug("Вычисляю срез - \(iteration)")
                 let slice: Dictionary<Key, Value>.SubSequence
-                let iterationIndex = parallel.structureData.index(structureDataStartIndex, offsetBy: end)
-
+                let currentIndex = parallel.structureData.index(structureDataStartIndex, offsetBy: end)
+                
                 if iteration == 1 {
                     slice = parallel.structureData.prefix(parallel.sliceData.step)
                 } else if iteration != parallel.amountThreads(threads) {
-                    let temp = parallel.structureData.prefix(through: iterationIndex)
-                    //print("===\(iteration)")
-                    //print(temp)
+                    let temp = parallel.structureData.prefix(through: currentIndex)
                     slice = temp.suffix(parallel.sliceData.step)
                 } else {
-                    let temp = parallel.structureData.prefix(through: iterationIndex)
+                    let temp = parallel.structureData.prefix(through: currentIndex)
                     slice = temp.suffix(parallel.sliceData.remainder + parallel.sliceData.step)
                 }
-                logger.debug("Вычислил - \(iteration)")
-                //print("===\(iteration)")
-                //print(slice.map{ $0.value })
                 
                 do {
                     let output = try slice.filter{ try isIncluded($0.key) }
                     parallel.insertQueue.async {
-                        //storage[iteration] = output
-                        logger.debug("Выполняю мердж - \(iteration)")
-                        storage2.merge(output) { (current, _) in current }
-                        logger.debug("Выполнил - \(iteration)")
+                        result.merge(output) { (current, _) in current }
                         group.leave()
                     }
-                    
-//                    DispatchQueue.global(qos: .userInitiated).async {
-//                        resultUpdateQueue.sync(flags: .barrier) {
-//                            storage2.merge(output) { (current, _) in current }
-//                            group.leave()
-//                        }
-//                    }
                 }
                 catch {
                     parallel.insertQueue.async {
-                        let message = "method: filter, element: \(Element.self), slice: "
+                        let message = "Dictionary, method: filter, element: \(Element.self), iteration: \(iteration)"
                         errors.append((message, error))
                         group.leave()
                     }
                 }
-                
-          
-                
-//                do {
-////                    if iteration == 1 {
-////                        let sliceA = parallel.structureData.suffix(from: <#T##Dictionary<Hashable, Value>.Index#>)
-////                    }
-////                    let needIndex = parallel.structureData.index(structureDataStartIndex, offsetBy: slice.min())
-//
-////                    parallel.insertQueue.async {
-////                        storage[iteration] = dictoinary
-////                        group.leave()
-////                    }
-//                } catch {
-//                    parallel.insertQueue.async {
-//                        let message = "method: filter, element: \(Element.self), slice: "
-//                        errors.append((message, error))
-//                        group.leave()
-//                    }
-//                }
             }
             group.wait()
             
@@ -133,42 +95,7 @@ extension Parallel {
                 }
             }
             
-//            var storage3: Dictionary<Key, Value> = [:]
-//            var storage4: Dictionary<Key, Value> = [:]
-//
-//            let to2 = DispatchQueue(label: "sdf")
-//            let to4 = DispatchQueue(label: "sdf")
-//
-//            let groupdd = DispatchGroup()
-//
-//            for item in 1...storage.count {
-//                if item % 2 == 0 {
-//                    groupdd.enter()
-//                    to2.async {
-//                        storage3.merge(storage[item]!){ (current, _) in current }
-//                        groupdd.leave()
-//                    }
-//                } else {
-//                    groupdd.enter()
-//                    to4.async {
-//
-//                        storage4.merge(storage[item]!){ (current, _) in current }
-//                        groupdd.leave()
-//                    }
-//                }
-//            }
-//            groupdd.wait()
-//
-//            storage3.merge(storage4){ (current, _) in current }
-//            return storage3
-            //print(storage2.randomElement())
-            
-            return storage2
-//            return storage.reduce([:], { x, y in
-//                var temp = x
-//                temp.merge(y.value){ (current, _) in current }
-//                return temp
-//            })
+            return result
         }
     }
 }
