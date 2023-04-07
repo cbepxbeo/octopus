@@ -65,6 +65,11 @@ extension TestProvider {
                 for _ in 1...500 {}
                 return $0.bool && $0.int == 99999
             }
+        case .custom(let end):
+            return {
+                for _ in 1...end {}
+                return $0.bool && $0.int == 99999
+            }
         }
     }
     
@@ -74,12 +79,17 @@ extension TestProvider {
             return { $0.key.bool && $0.key.int == 99999 }
         case .medium:
             return {
-                for _ in 1...100 {}
+                for _ in 1...50 {}
                 return $0.key.bool && $0.key.int == 99999
             }
         case .high:
             return {
                 for _ in 1...500 {}
+                return $0.key.bool && $0.key.int == 99999
+            }
+        case .custom(let end):
+            return {
+                for _ in 1...end {}
                 return $0.key.bool && $0.key.int == 99999
             }
         }
@@ -100,6 +110,11 @@ extension TestProvider {
                 for _ in 1...500 {}
                 return $0.string + "\($0.int)"
             }
+        case .custom(let end):
+            return {
+                for _ in 1...end {}
+                return $0.string + "\($0.int)"
+            }
         }
     }
     
@@ -107,5 +122,5 @@ extension TestProvider {
 
 
 enum TestProviderOption {
-    case low, high, medium
+    case low, high, medium, custom(Int)
 }

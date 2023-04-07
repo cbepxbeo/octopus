@@ -60,7 +60,7 @@ extension Parallel where StructureData == Array<Element> {
             _ rethrow: (_ error: Error) throws -> ()
         ) rethrows -> [Element]{
             if self.structureData.isEmpty {
-                logger.debug("structureData empty")
+                logger.debug("Structure data (Array) - empty")
                 return []
             }
             
@@ -87,7 +87,7 @@ extension Parallel where StructureData == Array<Element> {
                     }
                 } catch {
                     parallel.insertQueue.async {
-                        let message = "method: filter, element: \(Element.self), slice: \(slice)"
+                        let message = "Array, method: filter, element: \(Element.self), slice: \(slice)"
                         errors.append((message, error))
                         group.leave()
                     }
@@ -110,7 +110,7 @@ extension Parallel where StructureData == Array<Element> {
 
 //MARK: async with throws
 extension Parallel where StructureData == Array<Element> {
-    ///Asynchronously Returns an array containing, in order, the elements of a sequence that satisfy the given predicate, with the ability to handle errors.
+    ///Asynchronously returns an array containing, in order, the elements of a sequence that satisfy the given predicate, with the ability to handle errors.
     ///
     /// This example uses filter(_:) return an error.
     /// ```
@@ -178,7 +178,7 @@ extension Parallel where StructureData == Array<Element> {
 
 //MARK: async
 extension Parallel where StructureData == Array<Element> {
-    ///Asynchronously Returns an array containing, in order, the elements of a sequence that satisfy the given predicate.
+    ///Asynchronously returns an array containing, in order, the elements of a sequence that satisfy the given predicate.
     ///
     /// This example uses filter(_:) to include only values greater than twenty-one.
     /// ```

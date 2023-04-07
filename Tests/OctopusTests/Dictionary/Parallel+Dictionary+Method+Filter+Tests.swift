@@ -19,12 +19,18 @@ fileprivate let logger: Logger = .init(
 
 final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
     var staticDictionary: Dictionary<FakeData, FakeData>!
+    var staticBigDictionary: Dictionary<FakeData, FakeData>!
+    var staticVeryBigDictionary: Dictionary<FakeData, FakeData>!
     override func setUpWithError() throws {
         try super.setUpWithError()
-        self.staticDictionary = self.getDictionary(random: false, iterations: 10)
+        self.staticDictionary = self.getDictionary(random: false, iterations: 100)
+        self.staticBigDictionary = self.getDictionary(random: false, iterations: 1000)
+        self.staticVeryBigDictionary = self.getDictionary(random: false, iterations: 5000)
     }
     override func tearDownWithError() throws {
         self.staticDictionary = nil
+        self.staticBigDictionary = nil
+        self.staticVeryBigDictionary = nil
         try super.tearDownWithError()
     }
     
@@ -34,19 +40,48 @@ final class ParallelDictionaryMethodFilterTests: XCTestCase, TestProvider {
             dictoinary[item] = .init()
         }
         
-        let result = dictoinary.parallel().filter { $0 > 10 && $0 < 15 }
+        let result = dictoinary.parallel().filter { $0.key > 10 && $0.key < 15 }
         XCTAssert(result.count == 4)
     }
     
     
-    func testSpeed() throws {
+    func testSpeedDefaultDictionarySize() throws {
+        let optionValue = 20
         let timer = TestTimer.start()
-        let _ = self.staticDictionary.filter(self.filterTask(option: .medium))
+        let _ = self.staticDictionary.filter(self.filterTask(option: .custom(optionValue)))
         let defaultFilterTime = timer.stop()
         logger.debug("testSpeed: defaultFilterTime - \(defaultFilterTime)")
         
         timer.start()
-        let _ = self.staticDictionary.parallel().filter(self.filterTask(option: .medium))
+        let _ = self.staticDictionary.parallel().filter(self.filterTask(option: .custom(optionValue)))
+        let parallelFilterTime = timer.stop()
+        logger.debug("testSpeed: parallelFilterTime - \(parallelFilterTime)")
+        XCTAssert(defaultFilterTime > parallelFilterTime)
+    }
+    
+    func testSpeedBigDictionarySize() throws {
+        let optionValue = 10
+        let timer = TestTimer.start()
+        let _ = self.staticBigDictionary.filter(self.filterTask(option: .custom(optionValue)))
+        let defaultFilterTime = timer.stop()
+        logger.debug("testSpeed: defaultFilterTime - \(defaultFilterTime)")
+        
+        timer.start()
+        let _ = self.staticBigDictionary.parallel().filter(self.filterTask(option: .custom(optionValue)))
+        let parallelFilterTime = timer.stop()
+        logger.debug("testSpeed: parallelFilterTime - \(parallelFilterTime)")
+        XCTAssert(defaultFilterTime > parallelFilterTime)
+    }
+    
+    func testSpeedVeryBigDictionarySize() throws {
+        let optionValue = 5
+        let timer = TestTimer.start()
+        let _ = self.staticBigDictionary.filter(self.filterTask(option: .custom(optionValue)))
+        let defaultFilterTime = timer.stop()
+        logger.debug("testSpeed: defaultFilterTime - \(defaultFilterTime)")
+        
+        timer.start()
+        let _ = self.staticBigDictionary.parallel().filter(self.filterTask(option: .custom(optionValue)))
         let parallelFilterTime = timer.stop()
         logger.debug("testSpeed: parallelFilterTime - \(parallelFilterTime)")
         XCTAssert(defaultFilterTime > parallelFilterTime)
