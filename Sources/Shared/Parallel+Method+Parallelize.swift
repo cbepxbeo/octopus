@@ -39,6 +39,7 @@ extension Parallel {
             if startIndex >= endIndex {
                 break
             }
+            
             group.enter()
             DispatchQueue.global(qos: priority).async {
                 action(currentIteration, startIndex, endIndex)

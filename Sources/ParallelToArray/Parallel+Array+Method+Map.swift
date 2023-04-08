@@ -1,7 +1,7 @@
 /*
  
  Project: Octopus
- File: Parallel+Method+Map.swift
+ File: Parallel+Array+Method+Map.swift
  Created by: Egor Boyko
  Date: 03.04.2023
  
