@@ -11,7 +11,9 @@ Catch all errors with information about the occurrence interval.
   - Parallel async map
 - Dictionary
   - Parallel filter
+  - Parallel map
   - Parallel async filter
+  - Parallel async map
 
 ## Installation
 
