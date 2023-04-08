@@ -40,18 +40,8 @@ extension Parallel {
                 break
             }
             
-            let queue: DispatchQueue
-            if let priority = parallelThreads[priority], let dispatchQueue = priority[currentIteration] {
-                queue = dispatchQueue
-            } else {
-                queue = .init(label: "\(priority)-\(currentIteration)", attributes: .concurrent)
-                DispatchQueue.main.async {
-                    parallelThreads[priority] = [currentIteration: queue]
-                }
-            }
-
             group.enter()
-            queue.async {
+            DispatchQueue.global(qos: priority).async {
                 action(currentIteration, startIndex, endIndex)
             }
         }
