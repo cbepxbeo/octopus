@@ -111,6 +111,35 @@ final class ParallelSharedTests: XCTestCase, TestProvider {
         logger.debug("parallelResult count: \(parallelResult.count)")
         logger.debug("testSpeedDictionaryWithArray: parallelFilterTime - \(parallelFilterTime)")
         
+        
+        timer.start()
+        let subParallelResult = dictionary.filter { element in
+            let uppercased = element.value.parallel().map { string in
+                string.uppercased()
+            }
+            let namesWithZ = uppercased.parallel().filter { string in
+                if let ch = string.first {
+                    return ch == "Z"
+                }
+                return false
+            }
+            
+            if namesWithZ.count == 0 {
+                return false
+            }
+            let namesWithO = uppercased.parallel().filter { string in
+                if let ch = string.first {
+                    return ch == "O"
+                }
+                return false
+            }
+            return namesWithO.count != 0
+        }
+        let subParallelFilterTime = timer.stop()
+        logger.debug("subParallelFilterTime count: \(subParallelResult.count)")
+        logger.debug("testSpeedDictionaryWithArray: subParallelFilterTime - \(subParallelFilterTime)")
+        
+        
         timer.start()
         let multiParallelResult = dictionary.parallel().filter { element in
             let uppercased = element.value.parallel().map { string in
@@ -137,7 +166,6 @@ final class ParallelSharedTests: XCTestCase, TestProvider {
         let multiParallelFilterTime = timer.stop()
         logger.debug("multiParallelResult count: \(multiParallelResult.count)")
         logger.debug("testSpeedDictionaryWithArray: multiParallelFilterTime - \(multiParallelFilterTime)")
-        
         
     }
 }
