@@ -199,7 +199,7 @@ do {
 }
 
 ```
-##Features of use
+###Features of use
 
 When using, do not forget that the main use is related to offloading complex calculations. Each method creates queues and delegates its execution, which means that it is not worth investing in parallel computing, other parallel computing, you will get an explosion of threads and the execution time will only get worse.   
 
@@ -280,9 +280,11 @@ let defaultResult = dictionary.filter { element in
 
 Parallel use
 
+With all the overhead, parallel filtering will run one and a half to two times faster.
+
 ```swift
 
-let defaultResult = dictionary.filter { element in
+let parallelResult = dictionary.parallel().filter { element in
     let uppercased = element.value.map { string in
         string.uppercased()
     }
@@ -307,7 +309,7 @@ let defaultResult = dictionary.filter { element in
 
 ```
 
-With all the overhead, parallel filtering will run one and a half to two times faster.   
+  
 
 <b>If you nest parallel tasks in other parallel tasks, the method will do its job hundreds of times slower</b>
 
