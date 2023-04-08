@@ -199,7 +199,47 @@ do {
 }
 
 ```
-##Features of use
+
+#### Map
+The use makes sense if the transformation condition requires additional calculations, such as a nested loop. Otherwise, single-threaded dictionary conversion will be faster because it doesn't require a merge. The efficiency of work in relation to the complexity of nested calculations is directly proportional to the size of the dictionary - the larger the size, the less complexity is required to meet the conditions for achieving maximum performance.
+
+
+```swift
+import Octopus
+
+var dictionary: [Int: String] = [:]
+let end = 100
+for i in 0...end{
+    dictionary[i] = "\(i)"
+    for z in 0...end{
+        let value = z + (i * end)
+        dictionary[value] = "\(value)"
+    }
+}
+
+func mapTask() -> ((key: Int, value: String)) -> String{
+    return {
+        var temp: Int = $0.key
+        for item in 1...5 {
+            temp += item
+        }
+        return "\(temp)"
+    }
+}
+
+let defaultResult = dictionary.map(self.mapTask())
+let parallelResult = dictionary.parallel().map(self.mapTask()) //More efficient
+
+//....
+
+let defaultResult = dictionary.map{ "\($0.key)" } //More efficient
+let parallelResult = dictionary.parallel().map{ "\($0.key)" } 
+
+```
+
+The rest of the possibilities are similar to the array method.
+
+###Features of use
 
 When using, do not forget that the main use is related to offloading complex calculations. Each method creates queues and delegates its execution, which means that it is not worth investing in parallel computing, other parallel computing, you will get an explosion of threads and the execution time will only get worse.   
 
@@ -280,9 +320,11 @@ let defaultResult = dictionary.filter { element in
 
 Parallel use
 
+With all the overhead, parallel filtering will run one and a half to two times faster.
+
 ```swift
 
-let defaultResult = dictionary.filter { element in
+let parallelResult = dictionary.parallel().filter { element in
     let uppercased = element.value.map { string in
         string.uppercased()
     }
@@ -307,7 +349,7 @@ let defaultResult = dictionary.filter { element in
 
 ```
 
-With all the overhead, parallel filtering will run one and a half to two times faster.   
+  
 
 <b>If you nest parallel tasks in other parallel tasks, the method will do its job hundreds of times slower</b>
 
