@@ -8,9 +8,10 @@
  Status: #Completed | #Not decorated
  
 */
+
 import Foundation
 
-extension Array.Parallel {
+extension Parallel {
     internal static var instanceWasFreedMessage: String {
         let message = "The instance was freed at run time. "
         let ps = "P/S I don’t know how you did it, but if it happened, please share in the GitHub thread :-)"

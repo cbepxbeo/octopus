@@ -1,7 +1,7 @@
 /*
  
  Project: Octopus
- File: Array+GettingParallelInstance.swift
+ File: Array+Method+Parallel.swift
  Created by: Egor Boyko
  Date: 02.04.2023
  
@@ -10,7 +10,7 @@
 */
 
 extension Array {
-    public func parallel() -> Array.Parallel<Element> {
-        .init(array: self)
+    public func parallel() -> Parallel<Array<Element>, Element> {
+        .init(structureData: self)
     }
 }
