@@ -1,6 +1,6 @@
-# Parallel Sequence for Swift. 
+# Parallel Collection for Swift. 
 
-Use to achieve better performance on mutations and sequence transformations.  
+Use to achieve better performance on filtering and sequence transformations.  
 Catch all errors with information about the occurrence interval.
 ## Implemented
 
@@ -19,7 +19,7 @@ Catch all errors with information about the occurrence interval.
 
 The [Swift Package Manager](https://swift.org/package-manager/) is a tool for automating the distribution of Swift code and is integrated into the `swift` compiler.
 
-Once you have your Swift package set up, adding Alamofire as a dependency is as easy as adding it to the `dependencies` value of your `Package.swift`.
+Once you have your Swift package set up, adding Octopus as a dependency is as easy as adding it to the `dependencies` value of your `Package.swift`.
 
 ```swift
 dependencies: [
@@ -195,5 +195,175 @@ do {
 } catch {
    print(error) //prints all errors to the console
 }
+
+```
+##Features of use
+
+When using, do not forget that the main use is related to offloading complex calculations. Each method creates queues and delegates its execution, which means that it is not worth investing in parallel computing, other parallel computing, you will get an explosion of threads and the execution time will only get worse.   
+
+Let's consider the task. We need to filter the arrays nested in the dictionary, consisting of names. By a certain coincidence of the first letters.
+
+```swift
+
+let names: [String] = [
+    "Adam",     "Abraham",
+    "Bernard",  "Brian",
+    "Caleb",    "Carl",
+    "Daniel",   "Derek",
+    "Eric",     "Ernest",
+    "Felix",    "Frederick",
+    "Gabriel",  "Gregory",
+    "Harry",    "Henry",
+    "Jack",     "Jacob",
+    "Kurt",     "Kyle",
+    "Lucas",    "Leonard",
+    "Marcus",   "Martin",
+    "Scott",    "Simon",
+    "Travis",   "Tyler",
+    "Wayne",    "Winston",
+]
+
+```
+
+Let's prepare a dictionary
+
+```swift
+
+let namesWithZ = names + ["Zachary"]
+let namesWithO = names + ["Oliver"]
+let namesWithZAndO = namesWithZ + ["Oliver"]
+
+var dictionary: [Int: [String]] = [:]
+
+for item in 1...100 {
+    if item % 3 == 0 {
+        dictionary[item] = namesWithZ
+    } else if item % 2 == 0 {
+        dictionary[item] = namesWithO
+    } else {
+        dictionary[item] = namesWithZAndO
+    }
+}
+
+```
+
+Standard usage
+
+```swift
+
+let defaultResult = dictionary.filter { element in
+    let uppercased = element.value.map { string in
+        string.uppercased()
+    }
+    let namesWithZ = uppercased.filter { string in
+        if let ch = string.first {
+            return ch == "Z"
+        }
+        return false
+    }
+    
+    if namesWithZ.count == 0 {
+        return false
+    }
+    let namesWithO = uppercased.filter { string in
+        if let ch = string.first {
+            return ch == "O"
+        }
+        return false
+    }
+    return namesWithO.count != 0
+}
+
+```
+
+Parallel use
+
+```swift
+
+let defaultResult = dictionary.filter { element in
+    let uppercased = element.value.map { string in
+        string.uppercased()
+    }
+    let namesWithZ = uppercased.filter { string in
+        if let ch = string.first {
+            return ch == "Z"
+        }
+        return false
+    }
+    
+    if namesWithZ.count == 0 {
+        return false
+    }
+    let namesWithO = uppercased.filter { string in
+        if let ch = string.first {
+            return ch == "O"
+        }
+        return false
+    }
+    return namesWithO.count != 0
+}
+
+```
+
+With all the overhead, parallel filtering will run one and a half to two times faster.   
+
+<b>If you nest parallel tasks in other parallel tasks, the method will do its job hundreds of times slower</b>
+
+```swift
+
+let multiParallelResult = dictionary.parallel().filter { element in
+    let uppercased = element.value.parallel().map { string in
+        string.uppercased()
+    }
+    let namesWithZ = uppercased.parallel().filter { string in
+        if let ch = string.first {
+            return ch == "Z"
+        }
+        return false
+    }
+    
+    if namesWithZ.count == 0 {
+        return false
+    }
+    let namesWithO = uppercased.parallel().filter { string in
+        if let ch = string.first {
+            return ch == "O"
+        }
+        return false
+    }
+    return namesWithO.count != 0
+}
+
+//This implementation is erroneous.
+
+```
+Similar to nesting, running parallel computations within standard computations that are fast and iterate many times will result in performance degradation.
+
+```swift
+
+let subParallelResult = dictionary.filter { element in
+    let uppercased = element.value.parallel().map { string in
+        string.uppercased()
+    }
+    let namesWithZ = uppercased.parallel().filter { string in
+        if let ch = string.first {
+            return ch == "Z"
+        }
+        return false
+    }
+    
+    if namesWithZ.count == 0 {
+        return false
+    }
+    let namesWithO = uppercased.parallel().filter { string in
+        if let ch = string.first {
+            return ch == "O"
+        }
+        return false
+    }
+    return namesWithO.count != 0
+}
+
+//This implementation is erroneous.
 
 ```
