@@ -47,9 +47,9 @@ extension Parallel {
             }
             
             var storage: [T] = []
-            let structureDataStartIndex = self.structureData.startIndex
             let group = DispatchGroup()
             var errors: [(String, Error)] = []
+            let amountThreads = self.amountThreads(threads)
             
             self.parallelize(
                 amountThreads: self.amountThreads(threads),
@@ -60,18 +60,12 @@ extension Parallel {
                     group.leave()
                     return
                 }
-                let slice: Dictionary<Key, Value>.SubSequence
-                let currentIndex = parallel.structureData.index(structureDataStartIndex, offsetBy: end)
                 
-                if iteration == 1 {
-                    slice = parallel.structureData.prefix(parallel.sliceData.step)
-                } else if iteration != parallel.amountThreads(threads) {
-                    let temp = parallel.structureData.prefix(through: currentIndex)
-                    slice = temp.suffix(parallel.sliceData.step)
-                } else {
-                    let temp = parallel.structureData.prefix(through: currentIndex)
-                    slice = temp.suffix(parallel.sliceData.remainder + parallel.sliceData.step)
-                }
+                let slice = parallel.dictoinarySlice(
+                    iteration: iteration,
+                    end: end,
+                    requiredNumber: amountThreads
+                )
                 
                 do {
                     let output = try slice.map(transform)
@@ -82,7 +76,7 @@ extension Parallel {
                 }
                 catch {
                     parallel.insertQueue.async {
-                        let message = "Dictionary, method: filter, element: \(Element.self), iteration: \(iteration)"
+                        let message = "Dictionary, method: map, element: \(Element.self), iteration: \(iteration)"
                         errors.append((message, error))
                         group.leave()
                     }
@@ -97,7 +91,6 @@ extension Parallel {
                     try rethrow(OctopusError.alone(message: first.0, error: first.1))
                 }
             }
-            
             return storage
         }
     }

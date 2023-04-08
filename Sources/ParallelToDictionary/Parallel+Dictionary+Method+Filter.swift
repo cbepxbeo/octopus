@@ -83,12 +83,12 @@ extension Parallel {
             }
             
             var result: Dictionary<Key, Value> = [:]
-            let structureDataStartIndex = self.structureData.startIndex
             let group = DispatchGroup()
             var errors: [(String, Error)] = []
+            let amountThreads = self.amountThreads(threads)
             
             self.parallelize(
-                amountThreads: self.amountThreads(threads),
+                amountThreads: amountThreads,
                 group: group, priority: priority
             ) { [weak self] iteration, start, end in
                 guard let parallel = self else {
@@ -96,18 +96,12 @@ extension Parallel {
                     group.leave()
                     return
                 }
-                let slice: Dictionary<Key, Value>.SubSequence
-                let currentIndex = parallel.structureData.index(structureDataStartIndex, offsetBy: end)
                 
-                if iteration == 1 {
-                    slice = parallel.structureData.prefix(parallel.sliceData.step)
-                } else if iteration != parallel.amountThreads(threads) {
-                    let temp = parallel.structureData.prefix(through: currentIndex)
-                    slice = temp.suffix(parallel.sliceData.step)
-                } else {
-                    let temp = parallel.structureData.prefix(through: currentIndex)
-                    slice = temp.suffix(parallel.sliceData.remainder + parallel.sliceData.step)
-                }
+                let slice = parallel.dictoinarySlice(
+                    iteration: iteration,
+                    end: end,
+                    requiredNumber: amountThreads
+                )
                 
                 do {
                     let output = try slice.filter(isIncluded)
